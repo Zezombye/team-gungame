@@ -1,55 +1,6 @@
-settings {
-    "main": {
-        "description": "Gungame by Zezombye - BETA and UNFINISHED do not copy!"
-    },
-    "lobby": {
-        "allowPlayersInQueue": true,
-        "spectatorSlots": 6,
-        "team1Slots": 6,
-        "team2Slots": 6
-    },
-    "gamemodes": {
-        "elimination": {
-            "enabledMaps": [
-                /*"blackForest",
-                "blackForestWinter",
-                "castillo",*/
-                /*"ecopointAntarctica",*/
-                "ecopointAntarcticaWinter",
-                /*"necropolis",*/
-            ]
-        },
-        "general": {
-            "heroLimit": "off",
-            "enableRandomHeroes": true,
-            "respawnTime%": 30,
-            "gamemodeStartTrigger": "manual",
-            "spawnHealthPacks": "enabled"
-        }
-    },
-    "heroes": {
-        "allTeams": {
-            "mercy": {
-                "weaponsEnabled": "blaster"
-            },
-            "torbjorn": {
-                "weaponsEnabled": "hammer"
-            },
-            "ana": {
-                "enableAutomaticFire": false
-            },
-            "ashe": {
-                "enableAutomaticFire": false
-            },
-            "widowmaker": {
-                "enableAutomaticFire": false
-            },
-            "hammond": {
-                "enableRollOnly": true
-            },
-        }
-    }
-}
+
+settings "settings.opy.json"
+#!define BUILD_MODE false
 
 /* og order
 globalvar heroes = [
@@ -87,26 +38,9 @@ globalvar heroes = [
     Hero.TORBJORN,
 ]*/
 
-
-
-
-
-
-/*
-TODO:
-- respawn invuln - DONE
-- hud - DONE
-- workshop setting for closer spawns (top of box)
-- random spawns within a rectangle
-- players joining mid-game do not get first hero
-- message explaining that it must be treated like a ffa
-- small message if you go back a hero because you got melee'd
-- disable skins for faster load
-- preload each player's next hero
-- increase wait to not break the killfeed - DONE
-*/
-
 globalvar heroes = [
+    Hero.SOLDIER,
+
     Hero.ROADHOG,
     Hero.ORISA,
     Hero.SIGMA,
@@ -293,7 +227,7 @@ rule "wrong map":
     if getCurrentMap() not in [
         Map.BLACK_FOREST,
         Map.BLACK_FOREST_WINTER,
-        Map.CASTILLO,
+        #Map.CASTILLO,
         Map.ECOPOINT_ANTARCTICA,
         Map.ECOPOINT_ANTARCTICA_WINTER,
     ] or getCurrentGamemode() != Gamemode.ELIMINATION:
@@ -404,33 +338,15 @@ rule "force scope for ana/widow/ashe - release":
 
 #!include "debug.opy"
 
-rule "ecopoint":
-    @Condition getCurrentMap() in [Map.ECOPOINT_ANTARCTICA, Map.ECOPOINT_ANTARCTICA_WINTER]
-
-    if createWorkshopSetting(bool, "", "Make spawns closer", false):
-        team1SpawnPos = [vect(-3.41, 11.63, 26.21), vect(5.72, 11.63, 24)]
-        team2SpawnPos = [vect(-3.41, 11.63, -26.21), vect(5.72, 11.63, -24)]
-    else:
-        team1SpawnPos = [vect(11.079, 6.890, 34.397), vect(2.416, 7.099, 37.399)]
-        team2SpawnPos = [vect(2.416, 7.099, -37.399), vect(11.079, 6.890, -34.397)]
-
-    wallPos = [
-        [vect(10.250, 11.661, 40.467), vect(6.088, 11.652, 41.794), vect(6.120, 7.169, 41.879), vect(10.238, 7.035, 40.464)],
-        [vect(-7.451, 9.833, 41.413), vect(-8.998, 9.804, 39.832), vect(-8.978, 7.080, 39.849), vect(-7.436, 7.080, 41.399)],
-
-        
-        [vect(10.250, 11.661, -40.467), vect(6.088, 11.652, -41.794), vect(6.120, 7.169, -41.879), vect(10.238, 7.035, -40.464)],
-        [vect(-7.451, 9.833, -41.413), vect(-8.998, 9.804, -39.832), vect(-8.978, 7.080, -39.849), vect(-7.436, 7.080, -41.399)],
-    ]
-
 rule "player is alive":
     @Event eachPlayer
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
+    @Condition not BUILD_MODE
     if eventPlayer.getTeam() == Team.1:
-        eventPlayer.teleport(team1SpawnPos[0] + directionTowards(team1SpawnPos[0], team1SpawnPos[1]) * distance(team1SpawnPos[0], team1SpawnPos[1]) * eventPlayer.getSlot()/5)
+        eventPlayer.teleport(nearestWalkablePosition(team1SpawnPos[0] + directionTowards(team1SpawnPos[0], team1SpawnPos[1]) * distance(team1SpawnPos[0], team1SpawnPos[1]) * eventPlayer.getSlot()/5))
     else:
-        eventPlayer.teleport(team2SpawnPos[0] + directionTowards(team2SpawnPos[0], team2SpawnPos[1]) * distance(team2SpawnPos[0], team2SpawnPos[1]) * eventPlayer.getSlot()/5)
+        eventPlayer.teleport(nearestWalkablePosition(team2SpawnPos[0] + directionTowards(team2SpawnPos[0], team2SpawnPos[1]) * distance(team2SpawnPos[0], team2SpawnPos[1]) * eventPlayer.getSlot()/5))
     eventPlayer.hasBeenTeleported = true
     eventPlayer.invulnTime = 2
 
@@ -454,80 +370,7 @@ rule "player is no longer invulnerable":
     @Condition eventPlayer.invulnTime == 0
     eventPlayer.setDamageReceived(100)
 
-
-rule "anti wall - ecopoint":
-    @Event eachPlayer
-    @Condition eventPlayer.hasSpawned()
-    @Condition eventPlayer.isAlive()
-    @Condition getCurrentMap() in [Map.ECOPOINT_ANTARCTICA, Map.ECOPOINT_ANTARCTICA_WINTER]
-
-    while true:
-        eventPlayer.doNotSavePosition = false
-        if eventPlayer.hasBeenTeleported:
-            #check wall 0
-            if eventPlayer.getPosition().x > -1.50 and eventPlayer.getPosition().z > 39:
-                if getWallSideSign(0, eventPlayer) > -0.4:
-                    goto in_wall
-                if getWallSideSign(0, eventPlayer) > -1.5:
-                    eventPlayer.doNotSavePosition = true
-
-            #check wall 1
-            if eventPlayer.getPosition().z > 39:
-                if getWallSideSign(1, eventPlayer) > -0.4:
-                    goto in_wall
-                if getWallSideSign(1, eventPlayer) > -1.5:
-                    eventPlayer.doNotSavePosition = true
-
-            #check wall 2
-            if eventPlayer.getPosition().x > 1.50 and eventPlayer.getPosition().z < -39:
-                if getWallSideSign(2, eventPlayer) < 0.4:
-                    goto in_wall
-                if getWallSideSign(2, eventPlayer) < 1.5:
-                    eventPlayer.doNotSavePosition = true
-
-            #check wall 3
-            if eventPlayer.getPosition().z < -39:
-                if getWallSideSign(3, eventPlayer) < 0.4:
-                    goto in_wall
-                if getWallSideSign(3, eventPlayer) < 1.5:
-                    eventPlayer.doNotSavePosition = true
-
-
-        if not eventPlayer.doNotSavePosition:
-            eventPlayer.lastValidPosition = eventPlayer.getPosition()
-        wait(0.1)
-        continue
-
-        in_wall:
-        #eventPlayer.applyImpulse(getWallImpulseDirection(2, +1), eventPlayer.getSpeed(), Relativity.TO_WORLD, Impulse.CANCEL_CONTRARY_MOTION)
-        eventPlayer.teleport(eventPlayer.lastValidPosition)
-        eventPlayer.setStatusEffect(null, Status.ROOTED, 0.016)
-        wait()
-        
-
-rule "display walls":
-
-    #walls must be: top left, top right, bottom right, bottom left
-    for i in range(len(wallPos)):
-        for j in range(4):
-            createBeam(getAllPlayers(), Beam.GRAPPLE, wallPos[i][j], wallPos[i][(j+1)%4], Color.ORANGE, EffectReeval.VISIBILITY)
-
-        diagStart = wallPos[i][0]
-        diagEnd = wallPos[i][0]
-        #diagonals from top
-        while distance(wallPos[i][0], diagStart) < distance(wallPos[i][0], wallPos[i][1]) + distance(wallPos[i][1], wallPos[i][2]):
-
-            diagStart += directionTowards(wallPos[i][0], wallPos[i][1]) * DIAGONAL_INTERVAL
-            diagStartPos = diagStart
-            if distance(wallPos[i][0], diagStart) > distance(wallPos[i][0], wallPos[i][1]):
-                diagStartPos = wallPos[i][1] + directionTowards(wallPos[i][1], wallPos[i][2]) * (distance(wallPos[i][0], diagStart) - distance(wallPos[i][0], wallPos[i][1]))
-
-            diagEnd += directionTowards(wallPos[i][0], wallPos[i][3]) * DIAGONAL_INTERVAL
-            diagEndPos = diagEnd
-            if distance(wallPos[i][0], diagEnd) > distance(wallPos[i][0], wallPos[i][3]):
-                diagEndPos = wallPos[i][3] + directionTowards(wallPos[i][0], wallPos[i][3]) * (distance(wallPos[i][0], diagEnd) - distance(wallPos[i][0], wallPos[i][3]))
-            createBeam(getAllPlayers(), Beam.GRAPPLE, diagStartPos, diagEndPos, Color.ORANGE, EffectReeval.VISIBILITY)
-
-            wait()
-
-        wait()
+#!include "maps/ecopoint_antarctica.opy"
+#!include "maps/black_forest.opy"
+#!include "walls.opy"
+#!include "build_mode.opy"

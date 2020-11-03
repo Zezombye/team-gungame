@@ -3,20 +3,18 @@
 rule "black forest":
     @Condition getCurrentMap() in [Map.BLACK_FOREST, Map.BLACK_FOREST_WINTER]
 
-    if createWorkshopSetting(bool, "", "Make spawns closer", false):
-        team1SpawnPos = [vect(6.52, 10.66, 33.65), vect(17.24, 11.47, 29.48)]
-        team1SpawnPos = [vect(6.52, 10.66, 33.65 * -1 + 5*2), vect(17.24, 11.47, 29.48 * -1 + 5*2)]
+    if makeSpawnsCloser:
+        team1SpawnPos = [vect(17.837, 11.406, 23.264), vect(-2.976, 13.121, 21.742), vect(-3.291, 13.032, 25.381)]
     else:
-        team1SpawnPos = [vect(11.079, 6.890, 34.397), vect(2.416, 7.099, 37.399)]
-        team2SpawnPos = [vect(2.416, 7.099, -37.399), vect(11.079, 6.890, -34.397)]
+        team1SpawnPos = [vect(-3.462, 11.619, 38.271), vect(-4.701, 11.303, 35.356), vect(16.713, 11.434, 29.343)]
 
     wallPos = [
         [vect(29.520, 15.35, 26.099), vect(27.658, 15.35, 29.154), vect(27.657, 12.121, 29.154), vect(29.519, 12.121, 26.099)],
         [vect(25.525, 15.35, 32.942), vect(23.715, 15.35, 35.962), vect(23.714, 12.086, 35.962), vect(25.524, 12.086, 32.942)],
-        
-        [vect(29.520, 15.35, 26.099 * -1 + 5*2), vect(27.658, 15.35, 29.154 * -1 + 5*2), vect(27.657, 12.121, 29.154 * -1 + 5*2), vect(29.519, 12.121, 26.099 * -1 + 5*2)],
-        [vect(25.525, 15.35, 32.942 * -1 + 5*2), vect(23.715, 15.35, 35.962 * -1 + 5*2), vect(23.714, 12.086, 35.962 * -1 + 5*2), vect(25.524, 12.086, 32.942 * -1 + 5*2)],
     ]
+
+    mapSymVectAdd = vect(0,0,5*2)
+    mapSymVectMult = vect(1,1,-1)
 
 
 rule "walls application - black forest":
@@ -41,28 +39,6 @@ rule "walls application - black forest":
                     goto in_wall
                 if getWallSideSign(2, eventPlayer) < 1:
                     eventPlayer.doNotSavePosition = true
-
-            /*#check wall 1
-            if eventPlayer.getPosition().z > 39:
-                if getWallSideSign(1, eventPlayer) > -0.4:
-                    goto in_wall
-                if getWallSideSign(1, eventPlayer) > -1.5:
-                    eventPlayer.doNotSavePosition = true
-
-            #check wall 2
-            if eventPlayer.getPosition().x > 1.50 and eventPlayer.getPosition().z < -39:
-                if getWallSideSign(2, eventPlayer) < 0.4:
-                    goto in_wall
-                if getWallSideSign(2, eventPlayer) < 1.5:
-                    eventPlayer.doNotSavePosition = true
-
-            #check wall 3
-            if eventPlayer.getPosition().z < -39:
-                if getWallSideSign(3, eventPlayer) < 0.4:
-                    goto in_wall
-                if getWallSideSign(3, eventPlayer) < 1.5:
-                    eventPlayer.doNotSavePosition = true*/
-
 
         if not eventPlayer.doNotSavePosition:
             eventPlayer.lastValidPosition = eventPlayer.getPosition()

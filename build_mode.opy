@@ -7,6 +7,16 @@ rule "debug position":
     createBeam(getAllPlayers(), Beam.GOOD, hostPlayer.getPosition()+vect(500, 0, 0), hostPlayer.getPosition()+vect(-500, 0, 0), Color.ORANGE, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
     createBeam(getAllPlayers(), Beam.GOOD, hostPlayer.getPosition()+vect(0, 0, 500), hostPlayer.getPosition()+vect(0, 0, -500), Color.ORANGE, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
 
+    createBeam(getAllPlayers(), Beam.GOOD, team1SpawnPos[0], team1SpawnPos[1], Color.BLUE, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    createBeam(getAllPlayers(), Beam.GOOD, team1SpawnPos[1], team1SpawnPos[2], Color.BLUE, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    createBeam(getAllPlayers(), Beam.GOOD, team1SpawnPos[2], team1SpawnPos[3], Color.BLUE, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    createBeam(getAllPlayers(), Beam.GOOD, team1SpawnPos[3], team1SpawnPos[0], Color.BLUE, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    
+    createBeam(getAllPlayers(), Beam.GOOD, team2SpawnPos[0], team2SpawnPos[1], Color.BLUE, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    createBeam(getAllPlayers(), Beam.GOOD, team2SpawnPos[1], team2SpawnPos[2], Color.BLUE, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    createBeam(getAllPlayers(), Beam.GOOD, team2SpawnPos[2], team2SpawnPos[3], Color.BLUE, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    createBeam(getAllPlayers(), Beam.GOOD, team2SpawnPos[3], team2SpawnPos[0], Color.BLUE, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+
     print("dot product: {}".format(getWallSideSign(2, hostPlayer)))
 
 

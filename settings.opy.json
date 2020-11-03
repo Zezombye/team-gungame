@@ -1,7 +1,7 @@
 {
-    "main": {
+    /*"main": {
         "description": "Gungame by Zezombye - BETA and UNFINISHED do not copy!"
-    },
+    },*/
     "lobby": {
         "allowPlayersInQueue": true,
         "spectatorSlots": 6,
@@ -11,11 +11,11 @@
     "gamemodes": {
         "elimination": {
             "enabledMaps": [
-                "blackForest",
+                /*"blackForest",*/
                 /*"blackForestWinter",
                 "castillo",*/
                 /*"ecopointAntarctica",*/
-                /*"ecopointAntarcticaWinter",*/
+                "ecopointAntarcticaWinter",
                 /*"necropolis",*/
             ]
         },

@@ -1,5 +1,7 @@
 
 settings "settings.opy.json"
+#!obfuscate noNameObfuscation noInspectorObfuscation noRuleFilling noConstantObfuscation
+
 #!define BUILD_MODE false
 
 /* og order
@@ -78,9 +80,15 @@ globalvar heroes = [
     Hero.TORBJORN,
 ]
 
+globalvar makeSpawnsCloser = createWorkshopSetting(bool, "", "Make spawns closer", false)
+
 globalvar team1SpawnPos
 globalvar team2SpawnPos
 globalvar wallPos
+
+globalvar mapSymVectMult
+globalvar mapSymVectAdd
+
 globalvar i
 globalvar j
 globalvar diagStart
@@ -113,9 +121,12 @@ playervar i
 rule "init":
     disableGamemodeCompletion()
     disableScoring()
+    
     #setObjectiveDescription(getAllPlayers(), "                      sqdfdfqsqdfsqsdffdqs                                                                                                                                                                                                                                                         \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudReeval.VISIBILITY_AND_STRING)
 
     #scoring huds
+
+    #hudHeader(getAllPlayers(), w"                                       \n\n\n\n\n", HudPosition.TOP, -100, Color.BLACK, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
     
     sortedScoreHudTeam1(0)
     sortedScoreHudTeam1(1)
@@ -152,12 +163,8 @@ rule "init player":
     chase(eventPlayer.invulnTime, 0, rate=1, ChaseReeval.NONE)
 
     #Invuln ring effects
-    #for eventPlayer.i in range(0.1, 0.6, 0.1):
-    createEffect(getAllPlayers() if eventPlayer.invulnTime else [], Effect.RING, Color.YELLOW, eventPlayer.getPosition() + vect(0,2,0), 0.5, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
-    createEffect(getAllPlayers() if eventPlayer.invulnTime else [], Effect.RING, Color.YELLOW, eventPlayer.getPosition() + vect(0,2,0), 0.4, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
-    createEffect(getAllPlayers() if eventPlayer.invulnTime else [], Effect.RING, Color.YELLOW, eventPlayer.getPosition() + vect(0,2,0), 0.3, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
-    createEffect(getAllPlayers() if eventPlayer.invulnTime else [], Effect.RING, Color.YELLOW, eventPlayer.getPosition() + vect(0,2,0), 0.2, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
-    createEffect(getAllPlayers() if eventPlayer.invulnTime else [], Effect.RING, Color.YELLOW, eventPlayer.getPosition() + vect(0,2,0), 0.1, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    for eventPlayer.i in range(0.1, 0.6, 0.1):
+        createEffect(getAllPlayers() if eventPlayer.invulnTime else [], Effect.RING, Color.YELLOW, eventPlayer.getPosition() + vect(0,2,0), evalOnce(eventPlayer.i), EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
 
     hudSubtext(eventPlayer if eventPlayer.invulnTime else [], " \n\n\n\n\n\n\n\n\n\nInvulnerable: {}".format(eventPlayer.invulnTime), HudPosition.TOP, -100, Color.YELLOW, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
@@ -218,7 +225,7 @@ rule "shouldn't be in progress - make all players unable to play":
     @Event eachPlayer
     @Condition isGameInProgress()
     eventPlayer.startForcingHero(Hero.LUCIO)
-    eventPlayer.setCamera(vect(0, 500, 0), vect(0, 1000, 0), 0)
+    eventPlayer.startCamera(vect(0, 500, 0), vect(0, 1000, 0), 0)
     eventPlayer.disableHeroHUD()
     eventPlayer.disableGamemodeHud()
     eventPlayer.disableGamemodeInWorldUi()
@@ -338,15 +345,25 @@ rule "force scope for ana/widow/ashe - release":
 
 #!include "debug.opy"
 
-rule "player is alive":
+rule "player is alive - teleport him and make him invulnerable":
     @Event eachPlayer
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
     @Condition not BUILD_MODE
     if eventPlayer.getTeam() == Team.1:
-        eventPlayer.teleport(nearestWalkablePosition(team1SpawnPos[0] + directionTowards(team1SpawnPos[0], team1SpawnPos[1]) * distance(team1SpawnPos[0], team1SpawnPos[1]) * eventPlayer.getSlot()/5))
+        eventPlayer.teleport(nearestWalkablePosition(
+            team1SpawnPos[0] 
+            + directionTowards(team1SpawnPos[0], team1SpawnPos[1]) * random.uniform(0, distance(team1SpawnPos[0], team1SpawnPos[1])) 
+            + directionTowards(team1SpawnPos[0], team1SpawnPos[3]) * random.uniform(0, distance(team1SpawnPos[0], team1SpawnPos[3]))
+        ))
+        eventPlayer.setFacing(directionTowards(team1SpawnPos[0], team2SpawnPos[0]), Relativity.TO_WORLD)
     else:
-        eventPlayer.teleport(nearestWalkablePosition(team2SpawnPos[0] + directionTowards(team2SpawnPos[0], team2SpawnPos[1]) * distance(team2SpawnPos[0], team2SpawnPos[1]) * eventPlayer.getSlot()/5))
+        eventPlayer.teleport(nearestWalkablePosition(
+            team2SpawnPos[0]
+            + directionTowards(team2SpawnPos[0], team2SpawnPos[1]) * random.uniform(0, distance(team2SpawnPos[0], team2SpawnPos[1]))
+            + directionTowards(team2SpawnPos[0], team2SpawnPos[3]) * random.uniform(0, distance(team2SpawnPos[0], team2SpawnPos[3]))
+        ))
+        eventPlayer.setFacing(directionTowards(team2SpawnPos[0], team1SpawnPos[0]), Relativity.TO_WORLD)
     eventPlayer.hasBeenTeleported = true
     eventPlayer.invulnTime = 2
 
@@ -372,5 +389,22 @@ rule "player is no longer invulnerable":
 
 #!include "maps/ecopoint_antarctica.opy"
 #!include "maps/black_forest.opy"
+
+rule "mirror walls and spawns":
+    for i in range(ceil(len(wallPos)/2)):
+        wallPos.append([[
+            wallPos[i][0] * mapSymVectMult + mapSymVectAdd,
+            wallPos[i][1] * mapSymVectMult + mapSymVectAdd,
+            wallPos[i][2] * mapSymVectMult + mapSymVectAdd,
+            wallPos[i][3] * mapSymVectMult + mapSymVectAdd,
+        ]])
+
+    team1SpawnPos[3] = team1SpawnPos[0] + vectorTowards(team1SpawnPos[1], team1SpawnPos[2])
+
+    team2SpawnPos[0] = team1SpawnPos[0] * mapSymVectMult + mapSymVectAdd
+    team2SpawnPos[1] = team1SpawnPos[1] * mapSymVectMult + mapSymVectAdd
+    team2SpawnPos[2] = team1SpawnPos[2] * mapSymVectMult + mapSymVectAdd
+    team2SpawnPos[3] = team1SpawnPos[3] * mapSymVectMult + mapSymVectAdd
+
 #!include "walls.opy"
 #!include "build_mode.opy"

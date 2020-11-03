@@ -3,20 +3,17 @@
 rule "ecopoint":
     @Condition getCurrentMap() in [Map.ECOPOINT_ANTARCTICA, Map.ECOPOINT_ANTARCTICA_WINTER]
 
-    if createWorkshopSetting(bool, "", "Make spawns closer", false):
-        team1SpawnPos = [vect(-3.41, 11.63, 26.21), vect(5.72, 11.63, 24)]
-        team2SpawnPos = [vect(-3.41, 11.63, -26.21), vect(5.72, 11.63, -24)]
+    if makeSpawnsCloser:
+        team1SpawnPos = [vect(-4.884, 11.624, 26.306), vect(4.959, 11.63, 20.208), vect(8.489, 11.624, 23.775)]
     else:
-        team1SpawnPos = [vect(11.079, 6.890, 34.397), vect(2.416, 7.099, 37.399)]
-        team2SpawnPos = [vect(2.416, 7.099, -37.399), vect(11.079, 6.890, -34.397)]
+        team1SpawnPos = [vect(-0.178, 7.18, 35.397), vect(2.916, 7.162, 41.099), vect(14.304, 7.148, 37.361)]
+
+    mapSymVectAdd = vect(0,0,0)
+    mapSymVectMult = vect(1,1,-1)
 
     wallPos = [
         [vect(10.250, 11.661, 40.467), vect(6.088, 11.652, 41.794), vect(6.120, 7.169, 41.879), vect(10.238, 7.035, 40.464)],
         [vect(-7.451, 9.833, 41.413), vect(-8.998, 9.804, 39.832), vect(-8.978, 7.080, 39.849), vect(-7.436, 7.080, 41.399)],
-
-        
-        [vect(10.250, 11.661, -40.467), vect(6.088, 11.652, -41.794), vect(6.120, 7.169, -41.879), vect(10.238, 7.035, -40.464)],
-        [vect(-7.451, 9.833, -41.413), vect(-8.998, 9.804, -39.832), vect(-8.978, 7.080, -39.849), vect(-7.436, 7.080, -41.399)],
     ]
 
 

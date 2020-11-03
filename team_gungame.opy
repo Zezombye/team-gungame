@@ -1,8 +1,9 @@
 
 settings "settings.opy.json"
-#!obfuscate noNameObfuscation noInspectorObfuscation noRuleFilling noConstantObfuscation
+##!obfuscate noNameObfuscation noInspectorObfuscation noRuleFilling noConstantObfuscation
 
 #!define BUILD_MODE false
+#!define DEBUG_MODE true
 
 /* og order
 globalvar heroes = [
@@ -43,7 +44,7 @@ globalvar heroes = [
 globalvar heroes = [
     Hero.SOLDIER,
 
-    Hero.ROADHOG,
+    /*Hero.ROADHOG,
     Hero.ORISA,
     Hero.SIGMA,
     Hero.ZARYA,
@@ -76,7 +77,7 @@ globalvar heroes = [
     Hero.BRIGITTE,
     Hero.LUCIO,
 
-    Hero.HAMMOND,
+    Hero.HAMMOND,*/
     Hero.TORBJORN,
 ]
 
@@ -85,6 +86,8 @@ globalvar makeSpawnsCloser = createWorkshopSetting(bool, "", "Make spawns closer
 globalvar team1SpawnPos
 globalvar team2SpawnPos
 globalvar wallPos
+
+globalvar winner = null
 
 globalvar mapSymVectMult
 globalvar mapSymVectAdd
@@ -318,10 +321,6 @@ rule "player isn't 'stunned'":
         eventPlayer.startForcingButton(Button.MELEE)
 
 
-rule "player wins":
-    @Event eachPlayer
-    @Condition eventPlayer.score >= len(heroes)
-    bigMessage(getAllPlayers(), "{} wins!".format(eventPlayer))
 
 rule "tell user no primary for ana/widow/ashe":
     @Event eachPlayer
@@ -408,3 +407,13 @@ rule "mirror walls and spawns":
 
 #!include "walls.opy"
 #!include "build_mode.opy"
+#!include "win_screen/winhud.opy"
+
+
+rule "player wins":
+    @Event eachPlayer
+    @Condition eventPlayer.score >= len(heroes)
+    bigMessage(getAllPlayers(), "{} wins!".format(eventPlayer))
+    winner = eventPlayer
+    displayWinHuds = true
+    setObjectiveDescription(getAllPlayers(), "                      sqdfdfqsqdfsqsdffdqs                                                                                                                                                                                                                                                         \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudReeval.VISIBILITY_AND_STRING)

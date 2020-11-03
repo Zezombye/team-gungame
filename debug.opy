@@ -31,5 +31,5 @@ rule "create spawn positions":
 rule "lose hp":
     @Event eachPlayer
     @Condition eventPlayer.isHoldingButton(Button.INTERACT)
-    @Condition not BUILD_MODE
+    @Condition not BUILD_MODE and DEBUG_MODE
     damage(eventPlayer, null, 50)

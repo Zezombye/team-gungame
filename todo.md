@@ -2,11 +2,11 @@
 TODO:
 - respawn invuln - DONE
 - hud - DONE
-- workshop setting for closer spawns (top of box)
-- random spawns within a rectangle
+- workshop setting for closer spawns (top of box) - DONE
+- random spawns within a rectangle - DONE
 - players joining mid-game do not get first hero
 - message explaining that it must be treated like a ffa
-- small message if you go back a hero because you got melee'd
-- disable skins for faster load
+- small message if you go back a hero because you got melee'd - DONE
+- disable skins for faster load - DONE
 - preload each player's next hero - DONE
 - increase wait to not break the killfeed - DONE

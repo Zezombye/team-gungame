@@ -3,7 +3,9 @@ const FONT_HEIGHT = 12;
 const FULLWIDTH_SPACE = " "
 
 var charLengths = [];
-var charLines = [];
+var charGlyphs = [];
+
+//12*10 = 120 < 128, just under the limit
 
 for (var char in font) {
     var currentCharLines = [];
@@ -22,11 +24,12 @@ for (var char in font) {
     }
 
     currentCharLines = currentCharLines.map(x => x.replace(/ /g, FULLWIDTH_SPACE).replace(/#/g, "▒"));
-    charLines.push(currentCharLines);
+
+    charGlyphs.push(currentCharLines.join(""));
     charLengths.push(currentCharLength);
 }
 
 `
 globalvar charLengths = ${JSON.stringify(charLengths)}
-globalvar charLines = ${JSON.stringify(charLines)}
+globalvar charGlyphs = ${JSON.stringify(charGlyphs)}
 `

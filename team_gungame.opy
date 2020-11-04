@@ -77,8 +77,8 @@ globalvar heroes = [
     Hero.BRIGITTE,
     Hero.LUCIO,
 
-    Hero.HAMMOND,*/
-    Hero.TORBJORN,
+    Hero.HAMMOND,
+    Hero.TORBJORN,*/
 ]
 
 globalvar makeSpawnsCloser = createWorkshopSetting(bool, "", "Make spawns closer", false)
@@ -131,33 +131,13 @@ rule "init":
 
     #hudHeader(getAllPlayers(), w"                                       \n\n\n\n\n", HudPosition.TOP, -100, Color.BLACK, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
     
-    sortedScoreHudTeam1(0)
-    sortedScoreHudTeam1(1)
-    sortedScoreHudTeam1(2)
-    sortedScoreHudTeam1(3)
-    sortedScoreHudTeam1(4)
-    sortedScoreHudTeam1(5)
-    sortedScoreHudTeam1(6)
-    sortedScoreHudTeam1(7)
-    sortedScoreHudTeam1(8)
-    sortedScoreHudTeam1(9)
-    sortedScoreHudTeam1(10)
-    sortedScoreHudTeam1(11)
+    for i in range(12):
+        hudText(getAllPlayers().exclude(sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)]) if len(getAllPlayers()) > evalOnce(i) and sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)].getTeam() == Team.1 else [], sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)].score + 1, null, sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)], HudPosition.LEFT, -evalOnce(i), Color.TEAM_1, Color.WHITE, Color.TEAM_1, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
 
-    sortedScoreHudTeam2(0)
-    sortedScoreHudTeam2(1)
-    sortedScoreHudTeam2(2)
-    sortedScoreHudTeam2(3)
-    sortedScoreHudTeam2(4)
-    sortedScoreHudTeam2(5)
-    sortedScoreHudTeam2(6)
-    sortedScoreHudTeam2(7)
-    sortedScoreHudTeam2(8)
-    sortedScoreHudTeam2(9)
-    sortedScoreHudTeam2(10)
-    sortedScoreHudTeam2(11)
-
-    #setObjectiveDescription(getAllPlayers(), "Made by Zezombye - discord.gg/somesh1t", HudReeval.VISIBILITY)
+        hudText(getAllPlayers().exclude(sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)]) if len(getAllPlayers()) > evalOnce(i) and sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)].getTeam() == Team.2 else [], sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)].score + 1, null, sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)], HudPosition.LEFT, -evalOnce(i), Color.TEAM_2, Color.WHITE, Color.TEAM_1, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
+    
+    hudSubheader(getAllPlayers(), "Made by Zezombye", HudPosition.TOP, -999, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), "discord.io/zezworkshop\n\n\n", HudPosition.TOP, -998, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
 rule "init player":
     @Event eachPlayer
@@ -169,24 +149,28 @@ rule "init player":
     for eventPlayer.i in range(0.1, 0.6, 0.1):
         createEffect(getAllPlayers() if eventPlayer.invulnTime else [], Effect.RING, Color.YELLOW, eventPlayer.getPosition() + vect(0,2,0), evalOnce(eventPlayer.i), EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
 
-    hudSubtext(eventPlayer if eventPlayer.invulnTime else [], " \n\n\n\n\n\n\n\n\n\nInvulnerable: {}".format(eventPlayer.invulnTime), HudPosition.TOP, -100, Color.YELLOW, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubtext(eventPlayer if eventPlayer.invulnTime else [], " \n\n\n\n\nInvulnerable: {}".format(eventPlayer.invulnTime), HudPosition.TOP, -100, Color.YELLOW, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
     hudHeader(eventPlayer if eventPlayer.isDead() else [], "Respawn in: {}".format(floor(eventPlayer.timeUntilRespawn)), HudPosition.RIGHT, -100, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
     hudText(eventPlayer, eventPlayer.score+1, null, eventPlayer, HudPosition.LEFT, -sorted(getAllPlayers(), lambda x: x.score).index(eventPlayer), Color.GREEN, Color.WHITE, Color.GREEN, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
 
-    setObjectiveDescription(eventPlayer, "You are on {} {} ({}/{})".format(heroIcon(heroes[eventPlayer.score]), heroes[eventPlayer.score], eventPlayer.score+1, len(heroes)), HudReeval.VISIBILITY_SORT_ORDER_AND_STRING)
+    hudHeader(eventPlayer, "You are on {} {} ({}/{})".format(heroIcon(heroes[eventPlayer.score]), heroes[eventPlayer.score], eventPlayer.score+1, len(heroes)), HudPosition.TOP, -997, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
     #Cannot be healed by teammates
     startHealingModification(eventPlayer, getAllPlayers().exclude(eventPlayer), 0, HealingReeval.RECEIVERS_AND_HEALERS)
+
+    eventPlayer.disableGamemodeHud()
 
 rule "player got a kill":
     @Event playerDealtFinalBlow
     @Condition attacker != victim
     #print(eventAbility)
     #Steal level if melee/piledriver kill
-    if eventAbility == Button.MELEE or heroes[attacker.score] == Hero.HAMMOND and eventAbility == Button.CROUCH:
+    if eventAbility == Button.MELEE or heroes[attacker.score] == Hero.HAMMOND and eventAbility == Button.CROUCH and victim.score > 0:
         victim.score--
+        smallMessage(victim, "Killed by {} Melee! You lost a level!".format(abilityIconString(Hero.ANA, Button.MELEE)))
+        smallMessage(attacker, "{} Melee Kill! You stole a level!".format(abilityIconString(Hero.ANA, Button.MELEE)))
     
     #Do not grant score for torb if not primary, or for hammond if not roll/piledriver
     if eventAbility != Button.PRIMARY_FIRE and heroes[attacker.score] == Hero.TORBJORN:
@@ -247,6 +231,7 @@ rule "wrong map":
 rule "player suicided":
     @Event playerDied
     @Condition attacker == victim
+    @Condition victim.score > 0
     victim.score--
 
 rule "player score changed":
@@ -416,4 +401,5 @@ rule "player wins":
     bigMessage(getAllPlayers(), "{} wins!".format(eventPlayer))
     winner = eventPlayer
     displayWinHuds = true
-    setObjectiveDescription(getAllPlayers(), "                      sqdfdfqsqdfsqsdffdqs                                                                                                                                                                                                                                                         \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudReeval.VISIBILITY_AND_STRING)
+    setObjectiveDescription(getAllPlayers(), "                                                                                                                                                                                                                                                                                                                 \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudReeval.VISIBILITY_AND_STRING)
+    getAllPlayers().enableGamemodeHud()

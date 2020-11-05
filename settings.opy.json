@@ -48,5 +48,8 @@
                 "enableRollOnly": true
             },
         }
+    },
+    "workshop": {
+        "Make spawns closer": true
     }
 }

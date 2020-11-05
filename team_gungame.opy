@@ -77,8 +77,8 @@ globalvar heroes = [
     Hero.BRIGITTE,
     Hero.LUCIO,
 
-    Hero.HAMMOND,
-    Hero.TORBJORN,*/
+    Hero.HAMMOND,*/
+    Hero.TORBJORN,
 ]
 
 globalvar makeSpawnsCloser = createWorkshopSetting(bool, "", "Make spawns closer", false)
@@ -93,6 +93,7 @@ globalvar mapSymVectMult
 globalvar mapSymVectAdd
 
 globalvar i
+globalvar scoreboardLoopIdx
 globalvar j
 globalvar diagStart
 globalvar diagEnd
@@ -105,10 +106,6 @@ globalvar diagEndPos
 #!define getWallImpulseDirection(wallNb, sign) angleToDirection(horizontalAngleFromDirection(directionTowards(wallPos[wallNb][0], wallPos[wallNb][1])) + (sign) * 90, 0)
 
 #!define HERO_STUN_TIME 0.7
-
-#!define sortedScoreHudTeam1(i) hudText(getAllPlayers().exclude(sorted(getAllPlayers(), lambda x: x.score)[i]) if len(getAllPlayers()) > (i) and sorted(getAllPlayers(), lambda x: x.score)[i].getTeam() == Team.1 else [], sorted(getAllPlayers(), lambda x: x.score)[i].score + 1, null, sorted(getAllPlayers(), lambda x: x.score)[i], HudPosition.LEFT, -(i), Color.TEAM_1, Color.WHITE, Color.TEAM_1, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
-
-#!define sortedScoreHudTeam2(i) hudText(getAllPlayers().exclude(sorted(getAllPlayers(), lambda x: x.score)[i]) if len(getAllPlayers()) > (i) and sorted(getAllPlayers(), lambda x: x.score)[i].getTeam() == Team.2 else [], sorted(getAllPlayers(), lambda x: x.score)[i].score + 1, null, sorted(getAllPlayers(), lambda x: x.score)[i], HudPosition.LEFT, -(i), Color.TEAM_2, Color.WHITE, Color.TEAM_2, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
 
 playervar score = 0
 playervar oldscore = -1
@@ -131,10 +128,27 @@ rule "init":
 
     #hudHeader(getAllPlayers(), w"                                       \n\n\n\n\n", HudPosition.TOP, -100, Color.BLACK, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
     
-    for i in range(12):
-        hudText(getAllPlayers().exclude(sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)]) if len(getAllPlayers()) > evalOnce(i) and sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)].getTeam() == Team.1 else [], sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)].score + 1, null, sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)], HudPosition.LEFT, -evalOnce(i), Color.TEAM_1, Color.WHITE, Color.TEAM_1, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
+    for scoreboardLoopIdx in range(12):
+        hudText(
+            getAllPlayers().exclude(sorted(getAllPlayers(), lambda x: x.score)[evalOnce(scoreboardLoopIdx)]) 
+            if len(getAllPlayers()) > evalOnce(scoreboardLoopIdx) and sorted(getAllPlayers(), lambda x: x.score)[evalOnce(scoreboardLoopIdx)].getTeam() == Team.1 
+            else [], 
+            sorted(getAllPlayers(), lambda x: x.score)[evalOnce(scoreboardLoopIdx)].score + 1, null, 
+            sorted(getAllPlayers(), lambda x: x.score)[evalOnce(scoreboardLoopIdx)], HudPosition.LEFT, 
+            -evalOnce(scoreboardLoopIdx), 
+            Color.TEAM_1, Color.WHITE, Color.TEAM_1, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS
+        )
 
-        hudText(getAllPlayers().exclude(sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)]) if len(getAllPlayers()) > evalOnce(i) and sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)].getTeam() == Team.2 else [], sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)].score + 1, null, sorted(getAllPlayers(), lambda x: x.score)[evalOnce(i)], HudPosition.LEFT, -evalOnce(i), Color.TEAM_2, Color.WHITE, Color.TEAM_1, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
+        hudText(
+            getAllPlayers().exclude(sorted(getAllPlayers(), lambda x: x.score)[evalOnce(scoreboardLoopIdx)]) 
+            if len(getAllPlayers()) > evalOnce(scoreboardLoopIdx) and sorted(getAllPlayers(), lambda x: x.score)[evalOnce(scoreboardLoopIdx)].getTeam() == Team.2 
+            else [], 
+            sorted(getAllPlayers(), lambda x: x.score)[evalOnce(scoreboardLoopIdx)].score + 1, null, 
+            sorted(getAllPlayers(), lambda x: x.score)[evalOnce(scoreboardLoopIdx)], HudPosition.LEFT, 
+            -evalOnce(scoreboardLoopIdx), 
+            Color.TEAM_2, Color.WHITE, Color.TEAM_2, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS
+        )
+        wait()
     
     hudSubheader(getAllPlayers(), "Made by Zezombye", HudPosition.TOP, -999, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
     hudSubtext(getAllPlayers(), "discord.io/zezworkshop\n\n\n", HudPosition.TOP, -998, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
@@ -144,10 +158,12 @@ rule "init player":
     chase(eventPlayer.stunTime, 0, rate=1, ChaseReeval.NONE)
     chase(eventPlayer.timeUntilRespawn, 0, rate=1, ChaseReeval.NONE)
     chase(eventPlayer.invulnTime, 0, rate=1, ChaseReeval.NONE)
+    eventPlayer.disableGamemodeHud()
 
     #Invuln ring effects
     for eventPlayer.i in range(0.1, 0.6, 0.1):
         createEffect(getAllPlayers() if eventPlayer.invulnTime else [], Effect.RING, Color.YELLOW, eventPlayer.getPosition() + vect(0,2,0), evalOnce(eventPlayer.i), EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+        wait()
 
     hudSubtext(eventPlayer if eventPlayer.invulnTime else [], " \n\n\n\n\nInvulnerable: {}".format(eventPlayer.invulnTime), HudPosition.TOP, -100, Color.YELLOW, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
@@ -156,11 +172,11 @@ rule "init player":
     hudText(eventPlayer, eventPlayer.score+1, null, eventPlayer, HudPosition.LEFT, -sorted(getAllPlayers(), lambda x: x.score).index(eventPlayer), Color.GREEN, Color.WHITE, Color.GREEN, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
 
     hudHeader(eventPlayer, "You are on {} {} ({}/{})".format(heroIcon(heroes[eventPlayer.score]), heroes[eventPlayer.score], eventPlayer.score+1, len(heroes)), HudPosition.TOP, -997, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubheader(eventPlayer, "Next hero: {} {}".format(heroIcon(heroes[eventPlayer.score+1]), heroes[eventPlayer.score+1]) if eventPlayer.score < len(heroes)-1 else "Final hero", HudPosition.TOP, -996, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
     #Cannot be healed by teammates
     startHealingModification(eventPlayer, getAllPlayers().exclude(eventPlayer), 0, HealingReeval.RECEIVERS_AND_HEALERS)
 
-    eventPlayer.disableGamemodeHud()
 
 rule "player got a kill":
     @Event playerDealtFinalBlow
@@ -225,7 +241,7 @@ rule "wrong map":
         Map.ECOPOINT_ANTARCTICA,
         Map.ECOPOINT_ANTARCTICA_WINTER,
     ] or getCurrentGamemode() != Gamemode.ELIMINATION:
-        hudHeader(getAllPlayers(), " \n\nThe map {} is not supported!\nSupported maps:"/*"\n- Black Forest\n- Castillo"*/"\n- Ecopoint: Antarctica".format(getCurrentMap()), HudPosition.TOP, -99999, Color.RED, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
+        hudHeader(getAllPlayers(), " \n\nThe map {} is not supported!\nSupported maps:\n- Black Forest"/*"\n- Castillo"*/"\n- Ecopoint: Antarctica".format(getCurrentMap()), HudPosition.TOP, -99999, Color.RED, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
     
 
 rule "player suicided":
@@ -398,8 +414,16 @@ rule "mirror walls and spawns":
 rule "player wins":
     @Event eachPlayer
     @Condition eventPlayer.score >= len(heroes)
-    bigMessage(getAllPlayers(), "{} wins!".format(eventPlayer))
+    @Condition winner == null
     winner = eventPlayer
-    displayWinHuds = true
+
     setObjectiveDescription(getAllPlayers(), "                                                                                                                                                                                                                                                                                                                 \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudReeval.VISIBILITY_AND_STRING)
     getAllPlayers().enableGamemodeHud()
+    getAllPlayers().disableHeroHUD()
+    setSlowMotion(10)
+    wait(0.1)
+
+    if eventPlayer.couldNameBeGuessed:
+        displayWinHuds = true
+    else:
+        bigMessage(getAllPlayers(), "{} wins!".format(eventPlayer))

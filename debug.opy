@@ -1,6 +1,7 @@
 #!mainFile "team_gungame.opy"
 
 rule "debug":
+    @Condition DEBUG_MODE
 
     createDummy(Hero.ANA, Team.1, -1, null, null)
     createDummy(Hero.ANA, Team.1, -1, null, null)

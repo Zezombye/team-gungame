@@ -3,7 +3,7 @@
 
 #!include "settings.opy"
 
-#!obfuscate
+##!obfuscate
 
 #!define BUILD_MODE false
 #!define DEBUG_MODE false
@@ -154,6 +154,7 @@ rule "init":
     
     hudSubheader(getAllPlayers(), "Made by Zezombye | v"VERSION, HudPosition.TOP, -899, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
     hudSubtext(getAllPlayers(), "discord.io/zezworkshop\n\n\n", HudPosition.TOP, -898, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubtext(getPlayersOnHero(Hero.HAMMOND, Team.ALL), "Do a kill with {} Roll or {} Piledriver to progress".format(abilityIconString(Hero.HAMMOND, Button.SECONDARY_FIRE), abilityIconString(Hero.HAMMOND, Button.CROUCH)), HudPosition.TOP, -895, Color.RED, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
 rule "init player":
     @Event eachPlayer

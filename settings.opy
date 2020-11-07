@@ -51,9 +51,9 @@ settings {
             "torbjorn": {
                 "weaponsEnabled": "hammer"
             },
-            "hammond": {
+            /*"hammond": {
                 "enableRollOnly": true
-            },
+            },*/
         }
     },
     "workshop": {

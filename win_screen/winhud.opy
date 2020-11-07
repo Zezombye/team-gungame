@@ -23,42 +23,42 @@ playervar couldNameBeGuessed = false
 #https://docs.oracle.com/cd/E29584_01/webhelp/mdex_basicDev/src/rbdv_chars_mapping.html
 
 globalvar alphabetMappings = [
-    "0",
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "AaÀÁÂÃÄÅÆàáâãäåæĀāĂăĄą",
-    "Bbß",
-    "CcÇçĆćĈĉĊċČč",
-    "DdĎďĐÐđ",
-    "EeÈÉÊËèéêëĒēĔĕĖėĘęĚě",
-    "Ff",
-    "GgĜĝĞğĠġĢģ",
-    "HhĤĥĦħ",
-    "IiÌÍÎÏìíîïĨĩĪīĬĭĮįİı",
-    "JjĴĵ",
-    "KkĶķĸ",
-    "LlĹĺĻļĽľĿŀŁł",
-    "Mm",
-    "NnÑñŃńŅņŇňŉŊŋ",
-    "OoÒÓÔÕÖØòóôõöøŌōŎŏŐő",
-    "PpÞþ",
-    "Qq",
-    "RrŔŕŖŗŘř",
-    "SsŚśŜŝŞşŠš",
-    "TtŢţŤťŦŧ",
-    "UuÙÚÛÜùúûüŨũŪūŬŭŮůŰűŲų",
-    "Vv",
-    "WwŴŵ",
-    "Xx",
-    "YyÝýÿŶŷŸ",
-    "ZzŹźŻżŽž",
+    p"0",
+    p"1",
+    p"2",
+    p"3",
+    p"4",
+    p"5",
+    p"6",
+    p"7",
+    p"8",
+    p"9",
+    p"AaÀÁÂÃÄÅÆàáâãäåæĀāĂăĄą",
+    p"Bbß",
+    p"CcÇçĆćĈĉĊċČč",
+    p"DdĎďĐÐđ",
+    p"EeÈÉÊËèéêëĒēĔĕĖėĘęĚě",
+    p"Ff",
+    p"GgĜĝĞğĠġĢģ",
+    p"HhĤĥĦħ",
+    p"IiÌÍÎÏìíîïĨĩĪīĬĭĮįİı",
+    p"JjĴĵ",
+    p"KkĶķĸ",
+    p"LlĹĺĻļĽľĿŀŁł",
+    p"Mm",
+    p"NnÑñŃńŅņŇňŉŊŋ",
+    p"OoÒÓÔÕÖØòóôõöøŌōŎŏŐő",
+    p"PpÞþ",
+    p"Qq",
+    p"RrŔŕŖŗŘř",
+    p"SsŚśŜŝŞşŠš",
+    p"TtŢţŤťŦŧ",
+    p"UuÙÚÛÜùúûüŨũŪūŬŭŮůŰűŲų",
+    p"Vv",
+    p"WwŴŵ",
+    p"Xx",
+    p"YyÝýÿŶŷŸ",
+    p"ZzŹźŻżŽž",
 ]
 
 #!define HALFWIDTH_SPACE " "
@@ -150,18 +150,18 @@ rule "display win huds":
     winHud(" \n\n", HudPosition.LEFT, -500, HudReeval.VISIBILITY)
 
     winHud(
-"                                                 ▒▒      ▒▒  ▒▒                    ▒▒\n"
+p"                                                 ▒▒      ▒▒  ▒▒                    ▒▒\n"
 "                                                 ▒▒      ▒▒  ▒▒                    ▒▒", HudPosition.LEFT, -484, HudReeval.VISIBILITY)
     winHud(
-"                                                 ▒▒  ▒▒  ▒▒      ▒▒▒▒▒▒    ▒▒▒▒▒▒  ▒▒\n"
+p"                                                 ▒▒  ▒▒  ▒▒      ▒▒▒▒▒▒    ▒▒▒▒▒▒  ▒▒\n"
 "                                                 ▒▒  ▒▒  ▒▒  ▒▒  ▒▒▒▒▒▒▒  ▒▒▒▒▒▒▒  ▒▒", HudPosition.LEFT, -482, HudReeval.VISIBILITY)
     wait()
     winHud(
-"                                                 ▒▒  ▒▒  ▒▒  ▒▒  ▒▒   ▒▒  ▒▒       ▒▒\n"
+p"                                                 ▒▒  ▒▒  ▒▒  ▒▒  ▒▒   ▒▒  ▒▒       ▒▒\n"
 "                                                 ▒▒▒ ▒▒ ▒▒▒  ▒▒  ▒▒   ▒▒  ▒▒▒▒▒▒   ▒▒", HudPosition.LEFT, -480, HudReeval.VISIBILITY)
     wait()
     winHud(
-"                                                  ▒▒ ▒▒ ▒▒   ▒▒  ▒▒   ▒▒   ▒▒▒▒▒▒  ▒▒\n"
+p"                                                  ▒▒ ▒▒ ▒▒   ▒▒  ▒▒   ▒▒   ▒▒▒▒▒▒  ▒▒\n"
 "                                                  ▒▒▒▒▒▒▒▒   ▒▒  ▒▒   ▒▒       ▒▒    ", HudPosition.LEFT, -478, HudReeval.VISIBILITY)
     wait()
     winHud("                                                  ▒▒▒▒▒▒▒▒   ▒▒  ▒▒   ▒▒  ▒▒▒▒▒▒▒  ▒▒", HudPosition.LEFT, -477, HudReeval.VISIBILITY)
@@ -169,23 +169,23 @@ rule "display win huds":
     /*"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"*/, HudPosition.LEFT, -476, HudReeval.VISIBILITY)
 
     winHud(
-"▒▒      ▒▒  ▒▒                    ▒▒                                                \n"
+p"▒▒      ▒▒  ▒▒                    ▒▒                                                \n"
 "▒▒      ▒▒  ▒▒                    ▒▒                                                ", HudPosition.RIGHT, -484, HudReeval.VISIBILITY)
     wait()
     winHud(
-"▒▒  ▒▒  ▒▒      ▒▒▒▒▒▒    ▒▒▒▒▒▒  ▒▒                                                \n"
+p"▒▒  ▒▒  ▒▒      ▒▒▒▒▒▒    ▒▒▒▒▒▒  ▒▒                                                \n"
 "▒▒  ▒▒  ▒▒  ▒▒  ▒▒▒▒▒▒▒  ▒▒▒▒▒▒▒  ▒▒                                                ", HudPosition.RIGHT, -482, HudReeval.VISIBILITY)
     wait()
     winHud(
-"▒▒  ▒▒  ▒▒  ▒▒  ▒▒   ▒▒  ▒▒       ▒▒                                                \n"
+p"▒▒  ▒▒  ▒▒  ▒▒  ▒▒   ▒▒  ▒▒       ▒▒                                                \n"
 "▒▒▒ ▒▒ ▒▒▒  ▒▒  ▒▒   ▒▒  ▒▒▒▒▒▒   ▒▒                                                ", HudPosition.RIGHT, -480, HudReeval.VISIBILITY)
     wait()
     winHud(
-" ▒▒ ▒▒ ▒▒   ▒▒  ▒▒   ▒▒   ▒▒▒▒▒▒  ▒▒                                                \n"
+p" ▒▒ ▒▒ ▒▒   ▒▒  ▒▒   ▒▒   ▒▒▒▒▒▒  ▒▒                                                \n"
 " ▒▒▒▒▒▒▒▒   ▒▒  ▒▒   ▒▒       ▒▒                                                    ", HudPosition.RIGHT, -478, HudReeval.VISIBILITY)
     wait()
-    winHud(" ▒▒▒▒▒▒▒▒   ▒▒  ▒▒   ▒▒  ▒▒▒▒▒▒▒  ▒▒                                                ", HudPosition.RIGHT, -477, HudReeval.VISIBILITY)
+    winHud(p" ▒▒▒▒▒▒▒▒   ▒▒  ▒▒   ▒▒  ▒▒▒▒▒▒▒  ▒▒                                                ", HudPosition.RIGHT, -477, HudReeval.VISIBILITY)
     wait()
-    winHud("  ▒▒  ▒▒    ▒▒  ▒▒   ▒▒  ▒▒▒▒▒▒   ▒▒                                                
+    winHud(p"  ▒▒  ▒▒    ▒▒  ▒▒   ▒▒  ▒▒▒▒▒▒   ▒▒                                                
     \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudPosition.RIGHT, -476, HudReeval.VISIBILITY)
     

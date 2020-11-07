@@ -1,9 +1,12 @@
 
-settings "settings.opy.json"
-##!obfuscate noNameObfuscation noInspectorObfuscation noRuleFilling noConstantObfuscation
+#!define VERSION "0.1"
+
+#!include "settings.opy"
+
+#!obfuscate
 
 #!define BUILD_MODE false
-#!define DEBUG_MODE true
+#!define DEBUG_MODE false
 
 /* og order
 globalvar heroes = [
@@ -42,9 +45,10 @@ globalvar heroes = [
 ]*/
 
 globalvar heroes = [
-    Hero.SOLDIER,
+    /*Hero.SOLDIER,
+    Hero.MERCY,*/
 
-    /*Hero.ROADHOG,
+    Hero.ROADHOG,
     Hero.ORISA,
     Hero.SIGMA,
     Hero.ZARYA,
@@ -56,32 +60,35 @@ globalvar heroes = [
     Hero.SOMBRA,
     Hero.JUNKRAT,
     Hero.MEI,
-    Hero.ASHE,
     Hero.ECHO,
     Hero.TRACER,
     Hero.DOOMFIST,
-    Hero.WIDOWMAKER,
-    Hero.PHARAH,
+    Hero.ASHE,
     Hero.SOLDIER,
     Hero.MCCREE,
+    Hero.PHARAH,
     Hero.REAPER,
     Hero.HANZO,
     Hero.BASTION,
+    Hero.WIDOWMAKER,
     Hero.SYMMETRA,
 
+    Hero.BAPTISTE,
     Hero.ANA,
     Hero.MOIRA,
     Hero.ZENYATTA,
     Hero.MERCY,
-    Hero.BAPTISTE,
-    Hero.BRIGITTE,
     Hero.LUCIO,
+    Hero.BRIGITTE,
 
     Hero.HAMMOND,
-    Hero.TORBJORN,*/
+    Hero.TORBJORN,
 ]
 
-globalvar makeSpawnsCloser = createWorkshopSetting(bool, "", "Make spawns closer", false)
+globalvar makeSpawnsCloser = createWorkshopSetting(bool, "", "Make spawns closer", false, 0)
+globalvar oneAmmoForWidow = createWorkshopSetting(bool, "", "Widowmaker only has one bullet", true, 1)
+globalvar respawnTime = createWorkshopSetting(float[1:3], "", "Respawn time", 3, 2)
+globalvar invulnTime = createWorkshopSetting(float[2:4], "", "Invulnerability time", 3, 3)
 
 globalvar team1SpawnPos
 globalvar team2SpawnPos
@@ -145,7 +152,7 @@ rule "init":
         )
         wait()
     
-    hudSubheader(getAllPlayers(), "Made by Zezombye", HudPosition.TOP, -899, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), "Made by Zezombye | v"VERSION, HudPosition.TOP, -899, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
     hudSubtext(getAllPlayers(), "discord.io/zezworkshop\n\n\n", HudPosition.TOP, -898, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
 rule "init player":
@@ -162,7 +169,7 @@ rule "init player":
 
     hudSubtext(eventPlayer if eventPlayer.invulnTime > 0 and winner == null else [], " \n\n\n\n\nInvulnerable: {}".format(eventPlayer.invulnTime), HudPosition.TOP, -100, Color.YELLOW, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
-    hudHeader(eventPlayer if eventPlayer.isDead() and winner == null else [], "Respawn in: {}".format(floor(eventPlayer.timeUntilRespawn)), HudPosition.RIGHT, -100, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudHeader(eventPlayer if eventPlayer.isDead() and winner == null else [], "Respawn in: {}".format(round(eventPlayer.timeUntilRespawn)), HudPosition.RIGHT, -100, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
     hudText(eventPlayer, eventPlayer.score+1, null, eventPlayer, HudPosition.LEFT, -sorted(getAllPlayers(), lambda x: x.score).index(eventPlayer), Color.GREEN, Color.WHITE, Color.GREEN, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
 
@@ -174,6 +181,8 @@ rule "init player":
 
     #Set score based on the min score
     eventPlayer.score = max(0, sorted([p for p in getAllPlayers() if p.score > 0], lambda x: x.score)[0]-1)
+
+    eventPlayer.setRespawnTime(respawnTime)
 
 
 rule "player got a kill":
@@ -202,7 +211,7 @@ rule "player got a kill":
 
 rule "player died":
     @Event playerDied
-    eventPlayer.timeUntilRespawn = 2.99999
+    eventPlayer.timeUntilRespawn = respawnTime
     eventPlayer.hasBeenTeleported = false
 
 
@@ -246,6 +255,7 @@ rule "player suicided":
     @Event playerDied
     @Condition attacker == victim
     @Condition victim.score > 0
+    smallMessage(victim, "You killed yourself... You lost a level!".format(abilityIconString(Hero.ANA, Button.MELEE)))
     victim.score--
 
 rule "player score changed":
@@ -320,7 +330,7 @@ rule "player isn't 'stunned'":
         eventPlayer.startForcingButton(Button.MELEE)
 
 
-
+/*
 rule "tell user no primary for ana/widow/ashe":
     @Event eachPlayer
     @Condition eventPlayer.getCurrentHero() in [Hero.ANA, Hero.ASHE, Hero.WIDOWMAKER, Hero.MOIRA]
@@ -331,7 +341,7 @@ rule "tell user no primary for ana/widow/ashe":
         smallMessage(eventPlayer, "Hold {} to use succ".format(buttonString(Button.SECONDARY_FIRE)))
     else:
         smallMessage(eventPlayer, "Hold {} to use scope".format(buttonString(Button.SECONDARY_FIRE)))
-
+*/
 /*
 rule "force scope for ana/widow/ashe - release":
     @Event eachPlayer
@@ -363,7 +373,7 @@ rule "player is alive - teleport him and make him invulnerable":
         ))
         eventPlayer.setFacing(directionTowards(team2SpawnPos[0], team1SpawnPos[0]), Relativity.TO_WORLD)
     eventPlayer.hasBeenTeleported = true
-    eventPlayer.invulnTime = 2
+    eventPlayer.invulnTime = invulnTime
 
     #necessary for dummy bots
     eventPlayer.startForcingHero(heroes[eventPlayer.score])
@@ -384,6 +394,35 @@ rule "player is no longer invulnerable":
     @Event eachPlayer
     @Condition eventPlayer.invulnTime == 0
     eventPlayer.setDamageReceived(100)
+
+rule "1 ammo for widow":
+    @Event eachPlayer
+    @Condition eventPlayer.getCurrentHero() == Hero.WIDOWMAKER
+    @Condition eventPlayer.getMaxAmmo(0) > 1
+    @Condition oneAmmoForWidow
+    do:
+        eventPlayer.setMaxAmmo(0, 1)
+        wait()
+    while RULE_CONDITION
+
+rule "failsafe - no ammo for torb":
+    @Event eachPlayer
+    @Condition eventPlayer.getCurrentHero() == Hero.TORBJORN
+    @Condition eventPlayer.getMaxAmmo(0) > 0 or eventPlayer.getAmmo(0) > 0
+    do:
+        eventPlayer.setMaxAmmo(0, 0)
+        eventPlayer.setAmmo(0, 0)
+        wait()
+    while RULE_CONDITION
+
+rule "force weapons":
+    @Event eachPlayer
+    @Condition eventPlayer.getCurrentHero() in [Hero.TORBJORN, Hero.MERCY]
+    @Condition eventPlayer.getCurrentWeapon() == 1
+    do:
+        eventPlayer.setWeapon(2)
+        wait()
+    while RULE_CONDITION
 
 #!include "maps/ecopoint_antarctica.opy"
 #!include "maps/black_forest.opy"
@@ -415,17 +454,17 @@ rule "player wins":
     @Condition winner == null
     winner = eventPlayer
 
-    setObjectiveDescription(getAllPlayers(), "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudReeval.VISIBILITY_AND_STRING)
+    setObjectiveDescription(getAllPlayers(), p"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudReeval.VISIBILITY_AND_STRING)
     getAllPlayers().enableGamemodeHud()
     getAllPlayers().disableHeroHUD()
     setSlowMotion(30)
     bigMessage(getAllPlayers(), " \n\n\n\n\n".format(eventPlayer))
     wait(1)
 
-    if false and eventPlayer.couldNameBeGuessed:
+    if eventPlayer.couldNameBeGuessed:
         displayWinHuds = true
     else:
-        hudSubheader(getAllPlayers(), " \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudPosition.LEFT, -999, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        hudSubheader(getAllPlayers(), p" \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudPosition.LEFT, -999, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
         hudSubheader(getAllPlayers(), " \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudPosition.TOP, -999, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         hudHeader(getAllPlayers(), " \n     {} wins!     \n".format(eventPlayer), HudPosition.TOP, -998, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)

@@ -1,11 +1,11 @@
 
-#!define VERSION "0.1"
+#!define GAMEMODE_VERSION "0.1"
 
 #!include "settings.opy"
 
 ##!obfuscate
 
-#!define BUILD_MODE false
+#!define BUILD_MODE true
 #!define DEBUG_MODE false
 
 /* og order
@@ -85,6 +85,8 @@ globalvar heroes = [
     Hero.TORBJORN,
 ]
 
+globalvar practiceRangeTranslations = ["Practice Range", "Champ de tir"]
+
 globalvar makeSpawnsCloser = createWorkshopSetting(bool, "", "Make spawns closer", false, 0)
 globalvar oneAmmoForWidow = createWorkshopSetting(bool, "", "Widowmaker only has one bullet", true, 1)
 globalvar respawnTime = createWorkshopSetting(float[1:3], "", "Respawn time", 3, 2)
@@ -125,6 +127,7 @@ playervar doNotSavePosition
 playervar invulnTime
 playervar i
 
+#!include "strings.opy"
 
 rule "init":
     disableGamemodeCompletion()
@@ -152,9 +155,9 @@ rule "init":
         )
         wait()
     
-    hudSubheader(getAllPlayers(), "Made by Zezombye | v"VERSION, HudPosition.TOP, -899, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), "{}{}".format(STR_MADE_BY_ZEZ, GAMEMODE_VERSION), HudPosition.TOP, -899, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
     hudSubtext(getAllPlayers(), "discord.io/zezworkshop\n\n\n", HudPosition.TOP, -898, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
-    hudSubtext(getPlayersOnHero(Hero.HAMMOND, Team.ALL), "Do a kill with {} Roll or {} Piledriver to progress".format(abilityIconString(Hero.HAMMOND, Button.SECONDARY_FIRE), abilityIconString(Hero.HAMMOND, Button.CROUCH)), HudPosition.TOP, -895, Color.RED, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubtext(getPlayersOnHero(Hero.HAMMOND, Team.ALL), "{}{}{}{}{}".format(STR_HAMMOND_PROGRESS_1, abilityIconString(Hero.HAMMOND, Button.SECONDARY_FIRE), STR_HAMMOND_PROGRESS_2, abilityIconString(Hero.HAMMOND, Button.CROUCH), STR_HAMMOND_PROGRESS_3), HudPosition.TOP, -895, Color.RED, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
 rule "init player":
     @Event eachPlayer
@@ -170,12 +173,12 @@ rule "init player":
 
     hudSubtext(eventPlayer if eventPlayer.invulnTime > 0 and winner == null else [], " \n\n\n\n\nInvulnerable: {}".format(eventPlayer.invulnTime), HudPosition.TOP, -100, Color.YELLOW, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
-    hudHeader(eventPlayer if eventPlayer.isDead() and winner == null else [], "Respawn in: {}".format(round(eventPlayer.timeUntilRespawn)), HudPosition.RIGHT, -100, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudHeader(eventPlayer if eventPlayer.isDead() and winner == null else [], "{}{}".format(STR_RESPAWN_IN, round(eventPlayer.timeUntilRespawn)), HudPosition.RIGHT, -100, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
     hudText(eventPlayer, eventPlayer.score+1, null, eventPlayer, HudPosition.LEFT, -sorted(getAllPlayers(), lambda x: x.score).index(eventPlayer), Color.GREEN, Color.WHITE, Color.GREEN, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
 
-    hudHeader(eventPlayer if winner == null else [], "You are on {} {} ({}/{})".format(heroIcon(heroes[eventPlayer.score]), heroes[eventPlayer.score], eventPlayer.score+1, len(heroes)), HudPosition.TOP, -897, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
-    hudSubheader(eventPlayer if winner == null else [], "Next hero: {} {}".format(heroIcon(heroes[eventPlayer.score+1]), heroes[eventPlayer.score+1]) if eventPlayer.score < len(heroes)-1 else "Final hero", HudPosition.TOP, -896, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudHeader(eventPlayer if winner == null else [], "{} {} {} ({}/{})".format(STR_YOU_ARE_ON, heroIcon(heroes[eventPlayer.score]), heroes[eventPlayer.score], eventPlayer.score+1, len(heroes)), HudPosition.TOP, -897, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubheader(eventPlayer if winner == null else [], "{} {} {}".format(STR_NEXT_HERO, heroIcon(heroes[eventPlayer.score+1]), heroes[eventPlayer.score+1]) if eventPlayer.score < len(heroes)-1 else STR_FINAL_HERO, HudPosition.TOP, -896, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
     #Cannot be healed by teammates
     startHealingModification(eventPlayer, getAllPlayers().exclude(eventPlayer), 0, HealingReeval.RECEIVERS_AND_HEALERS)
@@ -193,8 +196,8 @@ rule "player got a kill":
     #Steal level if melee/piledriver kill
     if eventAbility == Button.MELEE or heroes[attacker.score] == Hero.HAMMOND and eventAbility == Button.CROUCH and victim.score > 0:
         victim.score--
-        smallMessage(victim, "Killed by {} Melee! You lost a level!".format(abilityIconString(Hero.ANA, Button.MELEE)))
-        smallMessage(attacker, "{} Melee Kill! You stole a level!".format(abilityIconString(Hero.ANA, Button.MELEE)))
+        smallMessage(victim, "{}{}{}".format(STR_KILLED_BY_MELEE_1, abilityIconString(Hero.ANA, Button.MELEE), STR_KILLED_BY_MELEE_2))
+        smallMessage(attacker, "{}{}{}".format(STR_MELEE_KILL_1, abilityIconString(Hero.ANA, Button.MELEE), STR_MELEE_KILL_2))
     
     #Do not grant score for torb if not primary, or for hammond if not roll/piledriver
     if eventAbility != Button.PRIMARY_FIRE and heroes[attacker.score] == Hero.TORBJORN:
@@ -228,7 +231,7 @@ rule "shouldn't be in progress":
     @Condition isGameInProgress()
     setMatchTime(9999)
     hudSubtext(getAllPlayers(), " \n\n\n\n\n\n", HudPosition.TOP, -500, Color.RED, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
-    hudHeader(getAllPlayers(), " \n\nDo not start the game!\nHost ({}): please restart the game to play.\n\n".format(hostPlayer), HudPosition.TOP, -400, Color.RED, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
+    hudHeader(getAllPlayers(), " \n\n{}{}{}\n\n".format(STR_DONT_START_GAME_1, hostPlayer, STR_DONT_START_GAME_2), HudPosition.TOP, -400, Color.RED, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
     disableAnnouncer()
     disableMusic()
 
@@ -249,14 +252,14 @@ rule "wrong map":
         Map.ECOPOINT_ANTARCTICA,
         Map.ECOPOINT_ANTARCTICA_WINTER,
     ] or getCurrentGamemode() != Gamemode.ELIMINATION:
-        hudHeader(getAllPlayers(), " \n\nThe map {} is not supported!\nSupported maps:\n- Black Forest"/*"\n- Castillo"*/"\n- Ecopoint: Antarctica".format(getCurrentMap()), HudPosition.TOP, -99999, Color.RED, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
+        hudHeader(getAllPlayers(), " \n\n{}{}{}\n- {}\n- {}".format(STR_UNSUPPORTED_MAP_1, getCurrentMap(), STR_UNSUPPORTED_MAP_2, Map.BLACK_FOREST, Map.ECOPOINT_ANTARCTICA), HudPosition.TOP, -99999, Color.RED, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
     
 
 rule "player suicided":
     @Event playerDied
     @Condition attacker == victim
     @Condition victim.score > 0
-    smallMessage(victim, "You killed yourself... You lost a level!".format(abilityIconString(Hero.ANA, Button.MELEE)))
+    smallMessage(victim, STR_KILLED_YOURSELF)
     victim.score--
 
 rule "player score changed":
@@ -468,5 +471,5 @@ rule "player wins":
         hudSubheader(getAllPlayers(), p" \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudPosition.LEFT, -999, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
         hudSubheader(getAllPlayers(), " \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudPosition.TOP, -999, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
-        hudHeader(getAllPlayers(), " \n     {} wins!     \n".format(eventPlayer), HudPosition.TOP, -998, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        hudHeader(getAllPlayers(), " \n     {} {}     \n".format(eventPlayer, STR_PLAYER_WINS), HudPosition.TOP, -998, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         hudSubheader(getAllPlayers(), " \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudPosition.TOP, -997, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)

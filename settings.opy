@@ -15,7 +15,7 @@ Made by Zezombyeㆍㆍㆍㆍㆍㆍㆍㆍㆍㆍㆍㆍ  discord.io/ZezWorkshop
 
 settings {
     "main": {
-        "description": "ㅤㅤㅤㅤㅤㅤㅤㅤㅤT e a m   G u n g a m e  |  v"+VERSION+"        ______________________________________________________________ ━━━━━━━━》Get to the next hero by dealing a killing blоw. ━━━━━━━━》Be the first to kill with Torbjörn to win! ━━━━━━━━》Kill with Melee to steal a level. ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣ㅤㅤ Made by Zezombyeㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ  discord.io/ZezWorkshop"
+        "description": "ㅤㅤㅤㅤㅤㅤㅤㅤㅤT e a m   G u n g a m e  |  v"+GAMEMODE_VERSION+"    ______________________________________________________________ ━━━━━━━━》Get to the next hero by dealing a killing blоw. ━━━━━━━━》Be the first to kill with Torbjörn to win! ━━━━━━━━》Kill with Melee to steal a level. ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣ㅤㅤ Made by Zezombyeㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ  discord.io/ZezWorkshop"
     },
     "lobby": {
         "allowPlayersInQueue": true,
@@ -28,10 +28,10 @@ settings {
             "enabledMaps": [
                 "blackForest",
                 "blackForestWinter",
-                /*"castillo",*/
                 "ecopointAntarctica",
                 "ecopointAntarcticaWinter",
-                /*"necropolis",*/
+                "lijiangGarden",
+                "lijiangGardenLny",
             ]
         },
         "general": {

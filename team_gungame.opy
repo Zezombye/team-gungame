@@ -151,7 +151,7 @@ rule "init player":
     startHealingModification(eventPlayer, getAllPlayers().exclude(eventPlayer), 0, HealingReeval.RECEIVERS_AND_HEALERS)
 
     #Set score based on the min score
-    eventPlayer.score = max(0, sorted([p for p in getAllPlayers() if p.score > 0], lambda x: x.score)[0]-1)
+    eventPlayer.score = max(0, sorted([p for p in getAllPlayers() if p.score > 0], lambda x: x.score)[0])
 
     eventPlayer.setRespawnTime(respawnTime)
 
@@ -226,8 +226,10 @@ rule "wrong map":
         Map.LIJIANG_NIGHT_MARKET,
         Map.LIJIANG_NIGHT_MARKET_LNY,
         Map.NECROPOLIS,
+        Map.NEPAL_SANCTUM,
+        Map.NEPAL_SHRINE,
     ] or getCurrentGamemode() != Gamemode.ELIMINATION:
-        hudHeader(getAllPlayers(), " \n\n{}{}{}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n\n".format(STR_UNSUPPORTED_MAP_1, getCurrentMap(), STR_UNSUPPORTED_MAP_2, Map.AYUTTHAYA, Map.BLACK_FOREST, Map.ECOPOINT_ANTARCTICA, Map.LIJIANG_CONTROL_CENTER, Map.LIJIANG_GARDEN, Map.LIJIANG_NIGHT_MARKET, Map.NECROPOLIS), HudPosition.TOP, -99999, Color.RED, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
+        hudHeader(getAllPlayers(), " \n\n{}{}{}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n\n".format(STR_UNSUPPORTED_MAP_1, getCurrentMap(), STR_UNSUPPORTED_MAP_2, Map.AYUTTHAYA, Map.BLACK_FOREST, Map.ECOPOINT_ANTARCTICA, Map.LIJIANG_CONTROL_CENTER, Map.LIJIANG_GARDEN, Map.LIJIANG_NIGHT_MARKET, Map.NECROPOLIS, Map.NEPAL_SANCTUM, Map.NEPAL_SHRINE), HudPosition.TOP, -99999, Color.RED, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
     
 
 rule "player suicided":
@@ -399,6 +401,7 @@ rule "force weapons":
 #!include "maps/lijiang_night_market.opy"
 #!include "maps/necropolis.opy"
 #!include "maps/nepal_sanctum.opy"
+#!include "maps/nepal_shrine.opy"
 
 rule "mirror walls and spawns":
     for i in range(ceil(len(wallPos)/2)):

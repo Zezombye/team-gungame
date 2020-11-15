@@ -37,8 +37,9 @@ settings {
                 "lijiangControlCenterLny",
                 "lijiangNightMarket",
                 "lijiangNightMarketLny",
-                "necropolis",*/
-                "nepalSanctum",
+                "necropolis",
+                "nepalSanctum",*/
+                "nepalShrine",
             ]
         },
         "general": {

@@ -5,44 +5,8 @@
 
 ##!obfuscate
 
-#!define BUILD_MODE true
+#!define BUILD_MODE false
 #!define DEBUG_MODE false
-
-/* og order
-globalvar heroes = [
-    Hero.LUCIO,
-    Hero.ANA,
-    Hero.MERCY,
-    Hero.MOIRA,
-    Hero.ZENYATTA,
-    Hero.BAPTISTE,
-    Hero.BRIGITTE,
-    Hero.GENJI,
-    Hero.JUNKRAT,
-    Hero.MEI,
-    Hero.SOMBRA,
-    Hero.ASHE,
-    Hero.ECHO,
-    Hero.TRACER,
-    Hero.DOOMFIST,
-    Hero.WIDOWMAKER,
-    Hero.PHARAH,
-    Hero.SOLDIER,
-    Hero.MCCREE,
-    Hero.REAPER,
-    Hero.HANZO,
-    Hero.BASTION,
-    Hero.SYMMETRA,
-    Hero.DVA,
-    Hero.ORISA,
-    Hero.SIGMA,
-    Hero.ZARYA,
-    Hero.WINSTON,
-    Hero.REINHARDT,
-    Hero.ROADHOG,
-    Hero.HAMMOND,
-    Hero.TORBJORN,
-]*/
 
 globalvar heroes = [
     Hero.SOLDIER,
@@ -94,6 +58,8 @@ globalvar invulnTime = createWorkshopSetting(float[2:4], "", "Invulnerability ti
 
 globalvar team1SpawnPos = []
 globalvar team2SpawnPos = []
+globalvar team1FacingDirection = null
+globalvar team2FacingDirection = null
 globalvar wallPos
 
 globalvar winner = null
@@ -248,17 +214,20 @@ rule "shouldn't be in progress - make all players unable to play":
 rule "wrong map":
     @Condition not BUILD_MODE
     if getCurrentMap() not in [
+        Map.AYUTTHAYA,
         Map.BLACK_FOREST,
         Map.BLACK_FOREST_WINTER,
-        #Map.CASTILLO,
         Map.ECOPOINT_ANTARCTICA,
         Map.ECOPOINT_ANTARCTICA_WINTER,
         Map.LIJIANG_CONTROL_CENTER,
         Map.LIJIANG_CONTROL_CENTER_LNY,
         Map.LIJIANG_GARDEN,
         Map.LIJIANG_GARDEN_LNY,
+        Map.LIJIANG_NIGHT_MARKET,
+        Map.LIJIANG_NIGHT_MARKET_LNY,
+        Map.NECROPOLIS,
     ] or getCurrentGamemode() != Gamemode.ELIMINATION:
-        hudHeader(getAllPlayers(), " \n\n{}{}{}\n- {}\n- {}\n- {}\n- {}\n- {}\n\n".format(STR_UNSUPPORTED_MAP_1, getCurrentMap(), STR_UNSUPPORTED_MAP_2, Map.BLACK_FOREST, Map.ECOPOINT_ANTARCTICA, Map.LIJIANG_CONTROL_CENTER, Map.LIJIANG_GARDEN, Map.LIJIANG_NIGHT_MARKET), HudPosition.TOP, -99999, Color.RED, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
+        hudHeader(getAllPlayers(), " \n\n{}{}{}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n\n".format(STR_UNSUPPORTED_MAP_1, getCurrentMap(), STR_UNSUPPORTED_MAP_2, Map.AYUTTHAYA, Map.BLACK_FOREST, Map.ECOPOINT_ANTARCTICA, Map.LIJIANG_CONTROL_CENTER, Map.LIJIANG_GARDEN, Map.LIJIANG_NIGHT_MARKET, Map.NECROPOLIS), HudPosition.TOP, -99999, Color.RED, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
     
 
 rule "player suicided":
@@ -340,27 +309,6 @@ rule "player isn't 'stunned'":
         eventPlayer.startForcingButton(Button.MELEE)
 
 
-/*
-rule "tell user no primary for ana/widow/ashe":
-    @Event eachPlayer
-    @Condition eventPlayer.getCurrentHero() in [Hero.ANA, Hero.ASHE, Hero.WIDOWMAKER, Hero.MOIRA]
-    @Condition eventPlayer.isHoldingButton(Button.PRIMARY_FIRE)
-    @Condition not eventPlayer.isHoldingButton(Button.SECONDARY_FIRE)
-    #eventPlayer.startForcingButton(Button.SECONDARY_FIRE)
-    if eventPlayer.getCurrentHero() == Hero.MOIRA:
-        smallMessage(eventPlayer, "Hold {} to use succ".format(buttonString(Button.SECONDARY_FIRE)))
-    else:
-        smallMessage(eventPlayer, "Hold {} to use scope".format(buttonString(Button.SECONDARY_FIRE)))
-*/
-/*
-rule "force scope for ana/widow/ashe - release":
-    @Event eachPlayer
-    @Condition eventPlayer.getCurrentHero() in [Hero.ANA, Hero.WIDOWMAKER, Hero.MOIRA]
-    @Condition not eventPlayer.isHoldingButton(Button.PRIMARY_FIRE)
-    #@Condition not eventPlayer.isHoldingButton(Button.SECONDARY_FIRE)
-    eventPlayer.stopForcingButton(Button.SECONDARY_FIRE)
-*/
-
 #!include "debug.opy"
 
 rule "player is alive - teleport him and make him invulnerable":
@@ -371,18 +319,25 @@ rule "player is alive - teleport him and make him invulnerable":
     eventPlayer.spawnIdx = random.randint(0, len(team1SpawnPos)-1)
     if eventPlayer.getTeam() == Team.1:
         eventPlayer.teleport(nearestWalkablePosition(
-            team1SpawnPos[0] 
-            + directionTowards(team1SpawnPos[0], team1SpawnPos[1]) * random.uniform(0, distance(team1SpawnPos[0], team1SpawnPos[1])) 
-            + directionTowards(team1SpawnPos[0], team1SpawnPos[3]) * random.uniform(0, distance(team1SpawnPos[0], team1SpawnPos[3]))
+            team1SpawnPos[eventPlayer.spawnIdx][0] 
+            + directionTowards(team1SpawnPos[eventPlayer.spawnIdx][0], team1SpawnPos[eventPlayer.spawnIdx][1]) * random.uniform(0, distance(team1SpawnPos[eventPlayer.spawnIdx][0], team1SpawnPos[eventPlayer.spawnIdx][1])) 
+            + directionTowards(team1SpawnPos[eventPlayer.spawnIdx][0], team1SpawnPos[eventPlayer.spawnIdx][3]) * random.uniform(0, distance(team1SpawnPos[eventPlayer.spawnIdx][0], team1SpawnPos[eventPlayer.spawnIdx][3]))
         ))
-        eventPlayer.setFacing(directionTowards(team1SpawnPos[0], team2SpawnPos[0]), Relativity.TO_WORLD)
+        if team1FacingDirection != null:
+            eventPlayer.setFacing(team1FacingDirection, Relativity.TO_WORLD)
+        else:
+            eventPlayer.setFacing(directionTowards(team1SpawnPos[eventPlayer.spawnIdx][0], team2SpawnPos[eventPlayer.spawnIdx][0]), Relativity.TO_WORLD)
     else:
         eventPlayer.teleport(nearestWalkablePosition(
-            team2SpawnPos[0]
-            + directionTowards(team2SpawnPos[0], team2SpawnPos[1]) * random.uniform(0, distance(team2SpawnPos[0], team2SpawnPos[1]))
-            + directionTowards(team2SpawnPos[0], team2SpawnPos[3]) * random.uniform(0, distance(team2SpawnPos[0], team2SpawnPos[3]))
+            team2SpawnPos[eventPlayer.spawnIdx][0]
+            + directionTowards(team2SpawnPos[eventPlayer.spawnIdx][0], team2SpawnPos[eventPlayer.spawnIdx][1]) * random.uniform(0, distance(team2SpawnPos[eventPlayer.spawnIdx][0], team2SpawnPos[eventPlayer.spawnIdx][1]))
+            + directionTowards(team2SpawnPos[eventPlayer.spawnIdx][0], team2SpawnPos[eventPlayer.spawnIdx][3]) * random.uniform(0, distance(team2SpawnPos[eventPlayer.spawnIdx][0], team2SpawnPos[eventPlayer.spawnIdx][3]))
         ))
-        eventPlayer.setFacing(directionTowards(team2SpawnPos[0], team1SpawnPos[0]), Relativity.TO_WORLD)
+        if team2FacingDirection != null:
+            eventPlayer.setFacing(team2FacingDirection, Relativity.TO_WORLD)
+        else:
+            eventPlayer.setFacing(directionTowards(team2SpawnPos[eventPlayer.spawnIdx][0], team1SpawnPos[eventPlayer.spawnIdx][0]), Relativity.TO_WORLD)
+
     eventPlayer.hasBeenTeleported = true
     eventPlayer.invulnTime = invulnTime
 
@@ -435,11 +390,15 @@ rule "force weapons":
         wait()
     while RULE_CONDITION
 
-#!include "maps/ecopoint_antarctica.opy"
+#!include "maps/ayutthaya.opy"
 #!include "maps/black_forest.opy"
+##!include "maps/castillo.opy"
+#!include "maps/ecopoint_antarctica.opy"
 #!include "maps/lijiang_control_center.opy"
 #!include "maps/lijiang_garden.opy"
 #!include "maps/lijiang_night_market.opy"
+#!include "maps/necropolis.opy"
+#!include "maps/nepal_sanctum.opy"
 
 rule "mirror walls and spawns":
     for i in range(ceil(len(wallPos)/2)):
@@ -460,6 +419,9 @@ rule "mirror walls and spawns":
             team1SpawnPos[i][2] * mapSymVectMult + mapSymVectAdd,
             team1SpawnPos[i][3] * mapSymVectMult + mapSymVectAdd,
         ]])
+
+    if team1FacingDirection != null:
+        team2FacingDirection = team1FacingDirection * mapSymVectMult
 
 #!include "walls.opy"
 #!include "build_mode.opy"

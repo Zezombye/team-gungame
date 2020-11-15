@@ -57,21 +57,21 @@ rule "walls application - lijiang night market":
                 goto in_wall
             
             #check wall 2
-            if eventPlayer.getPosition().x > 72:
+            if eventPlayer.getPosition().x > 71+1.85:
                 if eventPlayer.getPosition().z < -37.7:
                     goto in_wall
                 if eventPlayer.getPosition().z < -36.7:
                     eventPlayer.doNotSavePosition = true
 
             #check wall 3
-            if eventPlayer.getPosition().x > 83.5:
+            if eventPlayer.getPosition().x > 82.5+1.85:
                 if eventPlayer.getPosition().z > -14:
                     goto in_wall
                 if eventPlayer.getPosition().z > -15:
                     eventPlayer.doNotSavePosition = true
 
             #check spawn team 2
-            if eventPlayer.getPosition().x > -90.3:
+            if eventPlayer.getPosition().x > 89.3+1.85:
                 goto in_wall
 
         if not eventPlayer.doNotSavePosition:

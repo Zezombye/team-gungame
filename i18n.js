@@ -75,7 +75,7 @@ const translations = {
     //{} wins!
     PLAYER_WINS: {
         "en-US": "wins!",
-        "fr-FR": "a gagné!"
+        "fr-FR": "a gagné !"
     },
     /*XXXXX: {
         "en-US": "",

@@ -26,16 +26,19 @@ settings {
     "gamemodes": {
         "elimination": {
             "enabledMaps": [
-                /*"blackForest",
+                /*"ayutthaya",
+                "blackForest",
                 "blackForestWinter",
-                "ecopointAntarctica",
+                /*"ecopointAntarctica",
                 "ecopointAntarcticaWinter",
                 "lijiangGarden",
                 "lijiangGardenLny",
                 "lijiangControlCenter",
                 "lijiangControlCenterLny",
-                "lijiangNightMarket",*/
+                "lijiangNightMarket",
                 "lijiangNightMarketLny",
+                "necropolis",*/
+                "nepalSanctum",
             ]
         },
         "general": {

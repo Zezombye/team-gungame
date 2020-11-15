@@ -29,17 +29,20 @@ settings {
                 /*"ayutthaya",
                 "blackForest",
                 "blackForestWinter",
-                /*"ecopointAntarctica",
+                "ecopointAntarctica",
                 "ecopointAntarcticaWinter",
                 "lijiangGarden",
-                "lijiangGardenLny",
+                "lijiangGardenLny",*/
                 "lijiangControlCenter",
-                "lijiangControlCenterLny",
+                /*"lijiangControlCenterLny",
                 "lijiangNightMarket",
                 "lijiangNightMarketLny",
                 "necropolis",
-                "nepalSanctum",*/
+                "nepalSanctum",
                 "nepalShrine",
+                "nepalVillage",
+                "oasisUniversity",
+                "iliosRuins",*/
             ]
         },
         "general": {

@@ -9,8 +9,8 @@
 #!define DEBUG_MODE false
 
 globalvar heroes = [
-    Hero.SOLDIER,
-    Hero.MERCY,
+    /*Hero.SOLDIER,
+    Hero.MERCY,*/
 
     Hero.ROADHOG,
     Hero.ORISA,
@@ -219,6 +219,7 @@ rule "wrong map":
         Map.BLACK_FOREST_WINTER,
         Map.ECOPOINT_ANTARCTICA,
         Map.ECOPOINT_ANTARCTICA_WINTER,
+        Map.ILIOS_RUINS,
         Map.LIJIANG_CONTROL_CENTER,
         Map.LIJIANG_CONTROL_CENTER_LNY,
         Map.LIJIANG_GARDEN,
@@ -228,8 +229,10 @@ rule "wrong map":
         Map.NECROPOLIS,
         Map.NEPAL_SANCTUM,
         Map.NEPAL_SHRINE,
+        Map.NEPAL_VILLAGE,
+        Map.OASIS_UNIVERSITY,
     ] or getCurrentGamemode() != Gamemode.ELIMINATION:
-        hudHeader(getAllPlayers(), " \n\n{}{}{}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n\n".format(STR_UNSUPPORTED_MAP_1, getCurrentMap(), STR_UNSUPPORTED_MAP_2, Map.AYUTTHAYA, Map.BLACK_FOREST, Map.ECOPOINT_ANTARCTICA, Map.LIJIANG_CONTROL_CENTER, Map.LIJIANG_GARDEN, Map.LIJIANG_NIGHT_MARKET, Map.NECROPOLIS, Map.NEPAL_SANCTUM, Map.NEPAL_SHRINE), HudPosition.TOP, -99999, Color.RED, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
+        hudHeader(getAllPlayers(), " \n\n{}{}{}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n- {}\n\n".format(STR_UNSUPPORTED_MAP_1, getCurrentMap(), STR_UNSUPPORTED_MAP_2, Map.AYUTTHAYA, Map.BLACK_FOREST, Map.ECOPOINT_ANTARCTICA, Map.ILIOS_RUINS, Map.LIJIANG_CONTROL_CENTER, Map.LIJIANG_GARDEN, Map.LIJIANG_NIGHT_MARKET, Map.NECROPOLIS, Map.NEPAL_SANCTUM, Map.NEPAL_SHRINE, Map.NEPAL_VILLAGE, Map.OASIS_UNIVERSITY), HudPosition.TOP, -99999, Color.RED, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
     
 
 rule "player suicided":
@@ -396,12 +399,15 @@ rule "force weapons":
 #!include "maps/black_forest.opy"
 ##!include "maps/castillo.opy"
 #!include "maps/ecopoint_antarctica.opy"
+#!include "maps/ilios_ruins.opy"
 #!include "maps/lijiang_control_center.opy"
 #!include "maps/lijiang_garden.opy"
 #!include "maps/lijiang_night_market.opy"
 #!include "maps/necropolis.opy"
 #!include "maps/nepal_sanctum.opy"
 #!include "maps/nepal_shrine.opy"
+#!include "maps/nepal_village.opy"
+#!include "maps/oasis_university.opy"
 
 rule "mirror walls and spawns":
     for i in range(ceil(len(wallPos)/2)):

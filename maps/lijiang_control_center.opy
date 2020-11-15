@@ -1,59 +1,66 @@
 #!mainFile "../team_gungame.opy"
 
-rule "ecopoint":
-    @Condition getCurrentMap() in [Map.ECOPOINT_ANTARCTICA, Map.ECOPOINT_ANTARCTICA_WINTER]
+rule "lijiang control center":
+    @Condition getCurrentMap() in [Map.LIJIANG_CONTROL_CENTER, Map.LIJIANG_CONTROL_CENTER_LNY]
 
     if makeSpawnsCloser:
-        team1SpawnPos = [[vect(-4.884, 11.624, 26.306), vect(4.959, 11.63, 20.208), vect(8.489, 11.624, 23.775)]]
+        team1SpawnPos = [[vect(-29.686, 267, 314.473), vect(-23.744, 267, 300.64), vect(-31.399, 267, 292.141)]]
     else:
-        team1SpawnPos = [[vect(-0.178, 7.18, 35.397), vect(2.916, 7.162, 41.099), vect(14.304, 7.148, 37.361)]]
+        team1SpawnPos = [[vect(-48.487, 265, 320.664), vect(-58.421, 265, 325.114), vect(-51.437, 265, 338.328)]]
 
     mapSymVectAdd = vect(0,0,0)
-    mapSymVectMult = vect(1,1,-1)
+    mapSymVectMult = vect(-1,1,1)
 
     wallPos = [
-        [vect(10.250, 11.661, 40.467), vect(6.088, 11.652, 41.794), vect(6.120, 7.169, 41.879), vect(10.238, 7.035, 40.464)],
-        [vect(-7.451, 9.833, 41.413), vect(-8.998, 9.804, 39.832), vect(-8.978, 7.080, 39.849), vect(-7.436, 7.080, 41.399)],
+        [vect(-70.116, 269.735, 335.894), vect(-64.915, 269.735, 330.805), vect(-64.914, 266.5, 330.805), vect(-70.117, 266.5, 335.894)],
+        [vect(-55.943, 270.722, 356.032), vect(-59.616, 270.722, 359.734), vect(-59.615, 267.5, 359.734), vect(-55.942, 267.5, 356.032)],
     ]
 
 
-rule "walls application - ecopoint":
+rule "walls application - lijiang control center":
     @Event eachPlayer
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
-    @Condition getCurrentMap() in [Map.ECOPOINT_ANTARCTICA, Map.ECOPOINT_ANTARCTICA_WINTER]
+    @Condition getCurrentMap() in [Map.LIJIANG_CONTROL_CENTER, Map.LIJIANG_CONTROL_CENTER_LNY]
 
     while true:
         eventPlayer.doNotSavePosition = false
         if eventPlayer.hasBeenTeleported:
             #check wall 0
-            if eventPlayer.getPosition().x > -1.50 and eventPlayer.getPosition().z > 39:
+            if eventPlayer.getPosition().x < -64 and eventPlayer.getPosition().z > 325:
                 if getWallSideSign(0, eventPlayer) > -0.4:
                     goto in_wall
                 if getWallSideSign(0, eventPlayer) > -1.5:
                     eventPlayer.doNotSavePosition = true
 
             #check wall 1
-            if eventPlayer.getPosition().z > 39:
+            if eventPlayer.getPosition().x < -48 and eventPlayer.getPosition().z > 355:
                 if getWallSideSign(1, eventPlayer) > -0.4:
                     goto in_wall
                 if getWallSideSign(1, eventPlayer) > -1.5:
                     eventPlayer.doNotSavePosition = true
 
+            #check spawn team 1
+            if eventPlayer.getPosition().x < -78 and eventPlayer.getPosition().z > 360:
+                goto in_wall
+
             #check wall 2
-            if eventPlayer.getPosition().x > 1.50 and eventPlayer.getPosition().z < -39:
+            if eventPlayer.getPosition().x > 64 and eventPlayer.getPosition().z > 325:
                 if getWallSideSign(2, eventPlayer) < 0.4:
                     goto in_wall
                 if getWallSideSign(2, eventPlayer) < 1.5:
                     eventPlayer.doNotSavePosition = true
 
             #check wall 3
-            if eventPlayer.getPosition().z < -39:
+            if eventPlayer.getPosition().x > 48 and eventPlayer.getPosition().z > 355:
                 if getWallSideSign(3, eventPlayer) < 0.4:
                     goto in_wall
                 if getWallSideSign(3, eventPlayer) < 1.5:
                     eventPlayer.doNotSavePosition = true
 
+            #check spawn team 2
+            if eventPlayer.getPosition().x > 78 and eventPlayer.getPosition().z > 360:
+                goto in_wall
 
         if not eventPlayer.doNotSavePosition:
             eventPlayer.lastValidPosition = eventPlayer.getPosition()

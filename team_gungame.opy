@@ -45,8 +45,8 @@ globalvar heroes = [
 ]*/
 
 globalvar heroes = [
-    /*Hero.SOLDIER,
-    Hero.MERCY,*/
+    Hero.SOLDIER,
+    Hero.MERCY,
 
     Hero.ROADHOG,
     Hero.ORISA,
@@ -85,15 +85,15 @@ globalvar heroes = [
     Hero.TORBJORN,
 ]
 
-globalvar practiceRangeTranslations = ["Practice Range", "Champ de tir"]
+globalvar practiceRangeTranslations = [p"Practice Range", p"Champ de tir"]
 
 globalvar makeSpawnsCloser = createWorkshopSetting(bool, "", "Make spawns closer", false, 0)
 globalvar oneAmmoForWidow = createWorkshopSetting(bool, "", "Widowmaker only has one bullet", true, 1)
 globalvar respawnTime = createWorkshopSetting(float[1:3], "", "Respawn time", 3, 2)
 globalvar invulnTime = createWorkshopSetting(float[2:4], "", "Invulnerability time", 3, 3)
 
-globalvar team1SpawnPos
-globalvar team2SpawnPos
+globalvar team1SpawnPos = []
+globalvar team2SpawnPos = []
 globalvar wallPos
 
 globalvar winner = null
@@ -126,6 +126,7 @@ playervar hasBeenTeleported
 playervar doNotSavePosition
 playervar invulnTime
 playervar i
+playervar spawnIdx
 
 #!include "strings.opy"
 
@@ -178,7 +179,7 @@ rule "init player":
     hudText(eventPlayer, eventPlayer.score+1, null, eventPlayer, HudPosition.LEFT, -sorted(getAllPlayers(), lambda x: x.score).index(eventPlayer), Color.GREEN, Color.WHITE, Color.GREEN, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
 
     hudHeader(eventPlayer if winner == null else [], "{} {} {} ({}/{})".format(STR_YOU_ARE_ON, heroIcon(heroes[eventPlayer.score]), heroes[eventPlayer.score], eventPlayer.score+1, len(heroes)), HudPosition.TOP, -897, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
-    hudSubheader(eventPlayer if winner == null else [], "{} {} {}".format(STR_NEXT_HERO, heroIcon(heroes[eventPlayer.score+1]), heroes[eventPlayer.score+1]) if eventPlayer.score < len(heroes)-1 else STR_FINAL_HERO, HudPosition.TOP, -896, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubtext(eventPlayer if winner == null else [], "{} {} {}".format(STR_NEXT_HERO, heroIcon(heroes[eventPlayer.score+1]), heroes[eventPlayer.score+1]) if eventPlayer.score < len(heroes)-1 else STR_FINAL_HERO, HudPosition.TOP, -896, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
     #Cannot be healed by teammates
     startHealingModification(eventPlayer, getAllPlayers().exclude(eventPlayer), 0, HealingReeval.RECEIVERS_AND_HEALERS)
@@ -245,14 +246,19 @@ rule "shouldn't be in progress - make all players unable to play":
     eventPlayer.disableGamemodeInWorldUi()
 
 rule "wrong map":
+    @Condition not BUILD_MODE
     if getCurrentMap() not in [
         Map.BLACK_FOREST,
         Map.BLACK_FOREST_WINTER,
         #Map.CASTILLO,
         Map.ECOPOINT_ANTARCTICA,
         Map.ECOPOINT_ANTARCTICA_WINTER,
+        Map.LIJIANG_CONTROL_CENTER,
+        Map.LIJIANG_CONTROL_CENTER_LNY,
+        Map.LIJIANG_GARDEN,
+        Map.LIJIANG_GARDEN_LNY,
     ] or getCurrentGamemode() != Gamemode.ELIMINATION:
-        hudHeader(getAllPlayers(), " \n\n{}{}{}\n- {}\n- {}".format(STR_UNSUPPORTED_MAP_1, getCurrentMap(), STR_UNSUPPORTED_MAP_2, Map.BLACK_FOREST, Map.ECOPOINT_ANTARCTICA), HudPosition.TOP, -99999, Color.RED, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
+        hudHeader(getAllPlayers(), " \n\n{}{}{}\n- {}\n- {}\n- {}\n- {}\n- {}\n\n".format(STR_UNSUPPORTED_MAP_1, getCurrentMap(), STR_UNSUPPORTED_MAP_2, Map.BLACK_FOREST, Map.ECOPOINT_ANTARCTICA, Map.LIJIANG_CONTROL_CENTER, Map.LIJIANG_GARDEN, Map.LIJIANG_NIGHT_MARKET), HudPosition.TOP, -99999, Color.RED, HudReeval.VISIBILITY_SORT_ORDER_AND_STRING, SpecVisibility.ALWAYS)
     
 
 rule "player suicided":
@@ -362,6 +368,7 @@ rule "player is alive - teleport him and make him invulnerable":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
     @Condition not BUILD_MODE
+    eventPlayer.spawnIdx = random.randint(0, len(team1SpawnPos)-1)
     if eventPlayer.getTeam() == Team.1:
         eventPlayer.teleport(nearestWalkablePosition(
             team1SpawnPos[0] 
@@ -430,6 +437,9 @@ rule "force weapons":
 
 #!include "maps/ecopoint_antarctica.opy"
 #!include "maps/black_forest.opy"
+#!include "maps/lijiang_control_center.opy"
+#!include "maps/lijiang_garden.opy"
+#!include "maps/lijiang_night_market.opy"
 
 rule "mirror walls and spawns":
     for i in range(ceil(len(wallPos)/2)):
@@ -440,12 +450,16 @@ rule "mirror walls and spawns":
             wallPos[i][3] * mapSymVectMult + mapSymVectAdd,
         ]])
 
-    team1SpawnPos[3] = team1SpawnPos[0] + vectorTowards(team1SpawnPos[1], team1SpawnPos[2])
+    for i in range(len(team1SpawnPos)):
+        #team1SpawnPos[i][3] = team1SpawnPos[i][0] + vectorTowards(team1SpawnPos[i][1], team1SpawnPos[i][2])
+        team1SpawnPos[i].append(team1SpawnPos[i][0] + vectorTowards(team1SpawnPos[i][1], team1SpawnPos[i][2]))
 
-    team2SpawnPos[0] = team1SpawnPos[0] * mapSymVectMult + mapSymVectAdd
-    team2SpawnPos[1] = team1SpawnPos[1] * mapSymVectMult + mapSymVectAdd
-    team2SpawnPos[2] = team1SpawnPos[2] * mapSymVectMult + mapSymVectAdd
-    team2SpawnPos[3] = team1SpawnPos[3] * mapSymVectMult + mapSymVectAdd
+        team2SpawnPos.append([[
+            team1SpawnPos[i][0] * mapSymVectMult + mapSymVectAdd,
+            team1SpawnPos[i][1] * mapSymVectMult + mapSymVectAdd,
+            team1SpawnPos[i][2] * mapSymVectMult + mapSymVectAdd,
+            team1SpawnPos[i][3] * mapSymVectMult + mapSymVectAdd,
+        ]])
 
 #!include "walls.opy"
 #!include "build_mode.opy"

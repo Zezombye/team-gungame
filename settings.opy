@@ -26,12 +26,16 @@ settings {
     "gamemodes": {
         "elimination": {
             "enabledMaps": [
-                "blackForest",
+                /*"blackForest",
                 "blackForestWinter",
                 "ecopointAntarctica",
                 "ecopointAntarcticaWinter",
                 "lijiangGarden",
                 "lijiangGardenLny",
+                "lijiangControlCenter",
+                "lijiangControlCenterLny",
+                "lijiangNightMarket",*/
+                "lijiangNightMarketLny",
             ]
         },
         "general": {

@@ -4,9 +4,9 @@ rule "black forest":
     @Condition getCurrentMap() in [Map.BLACK_FOREST, Map.BLACK_FOREST_WINTER]
 
     if makeSpawnsCloser:
-        team1SpawnPos = [vect(17.837, 11.406, 23.264), vect(-2.976, 13.121, 21.742), vect(-3.291, 13.032, 25.381)]
+        team1SpawnPos = [[vect(17.837, 11.406, 23.264), vect(-2.976, 13.121, 21.742), vect(-3.291, 13.032, 25.381)]]
     else:
-        team1SpawnPos = [vect(-3.462, 11.619, 38.271), vect(-4.701, 11.303, 35.356), vect(16.713, 11.434, 29.343)]
+        team1SpawnPos = [[vect(-3.462, 11.619, 38.271), vect(-4.701, 11.303, 35.356), vect(16.713, 11.434, 29.343)]]
 
     wallPos = [
         [vect(29.520, 15.35, 26.099), vect(27.658, 15.35, 29.154), vect(27.657, 12.121, 29.154), vect(29.519, 12.121, 26.099)],

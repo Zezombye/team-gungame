@@ -36,6 +36,7 @@ rule "walls application - ayutthaya":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
     @Condition getCurrentMap() in [Map.AYUTTHAYA]
+    @Disabled
 
     while true:
         eventPlayer.doNotSavePosition = false

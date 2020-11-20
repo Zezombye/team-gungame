@@ -27,6 +27,7 @@ rule "walls application - necropolis":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
     @Condition getCurrentMap() in [Map.NECROPOLIS]
+    @Disabled
 
     while true:
         eventPlayer.doNotSavePosition = false

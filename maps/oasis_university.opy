@@ -31,6 +31,7 @@ rule "walls application - oasis university":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
     @Condition getCurrentMap() in [Map.OASIS_UNIVERSITY]
+    @Disabled
 
     while true:
         eventPlayer.doNotSavePosition = false

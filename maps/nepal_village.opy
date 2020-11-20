@@ -28,6 +28,7 @@ rule "walls application - nepal village":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
     @Condition getCurrentMap() in [Map.NEPAL_VILLAGE]
+    @Disabled
 
     while true:
         eventPlayer.doNotSavePosition = false

@@ -22,6 +22,7 @@ rule "walls application - black forest":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
     @Condition getCurrentMap() in [Map.BLACK_FOREST, Map.BLACK_FOREST_WINTER]
+    @Disabled
 
     while true:
         eventPlayer.doNotSavePosition = false

@@ -17,6 +17,14 @@ rule "debug":
     createDummy(Hero.ANA, Team.2, -1, null, null)
     createDummy(Hero.ANA, Team.2, -1, null, null)
 
+
+rule "debug - dummy fire":
+    @Event eachPlayer
+    @Condition eventPlayer.isDummy()
+    #eventPlayer.startFacing(directionTowards(eventPlayer.getEyePosition(), getClosestPlayer(eventPlayer.getPosition(), getOppositeTeam(eventPlayer.getTeam())).getEyePosition()), 30, Relativity.TO_WORLD, FacingReeval.DIRECTION_AND_TURN_RATE)
+    while true:
+        eventPlayer.startForcingButton(Button.PRIMARY_FIRE)
+        wait(1)
 /*
 globalvar spawnPos = []
 

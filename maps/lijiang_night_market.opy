@@ -34,6 +34,7 @@ rule "walls application - lijiang night market":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
     @Condition getCurrentMap() in [Map.LIJIANG_NIGHT_MARKET, Map.LIJIANG_NIGHT_MARKET_LNY]
+    @Disabled
 
     while true:
         eventPlayer.doNotSavePosition = false

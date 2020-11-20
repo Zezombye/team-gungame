@@ -3,7 +3,7 @@
 
 #!include "settings.opy"
 
-##!obfuscate
+#!obfuscate
 
 #!define BUILD_MODE false
 #!define DEBUG_MODE false
@@ -100,12 +100,6 @@ rule "init":
     disableGamemodeCompletion()
     disableScoring()
     
-    #setObjectiveDescription(getAllPlayers(), "                      sqdfdfqsqdfsqsdffdqs                                                                                                                                                                                                                                                         \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudReeval.VISIBILITY_AND_STRING)
-
-    #scoring huds
-
-    #hudHeader(getAllPlayers(), w"                                       \n\n\n\n\n", HudPosition.TOP, -100, Color.BLACK, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
-    
     for scoreboardLoopIdx in range(12):
         hudText(
             getAllPlayers().exclude(sorted(getAllPlayers(), lambda x: x.score)[evalOnce(scoreboardLoopIdx)]) 
@@ -151,7 +145,7 @@ rule "init player":
     startHealingModification(eventPlayer, getAllPlayers().exclude(eventPlayer), 0, HealingReeval.RECEIVERS_AND_HEALERS)
 
     #Set score based on the min score
-    eventPlayer.score = max(0, sorted([p for p in getAllPlayers() if p.score > 0], lambda x: x.score)[0])
+    eventPlayer.score = max(0, sorted([p for p in getAllPlayers() if p.score > 0], lambda x: x.score)[0].score)
 
     eventPlayer.setRespawnTime(respawnTime)
 
@@ -163,8 +157,8 @@ rule "player got a kill":
     #Steal level if melee/piledriver kill
     if eventAbility == Button.MELEE or heroes[attacker.score] == Hero.HAMMOND and eventAbility == Button.CROUCH and victim.score > 0:
         victim.score--
-        smallMessage(victim, "{}{}{}".format(STR_KILLED_BY_MELEE_1, abilityIconString(Hero.ANA, Button.MELEE), STR_KILLED_BY_MELEE_2))
-        smallMessage(attacker, "{}{}{}".format(STR_MELEE_KILL_1, abilityIconString(Hero.ANA, Button.MELEE), STR_MELEE_KILL_2))
+        bigMessage(victim, "{}{}{}".format(STR_KILLED_BY_MELEE_1, abilityIconString(Hero.ANA, Button.MELEE), STR_KILLED_BY_MELEE_2))
+        bigMessage(attacker, "{}{}{}".format(STR_MELEE_KILL_1, abilityIconString(Hero.ANA, Button.MELEE), STR_MELEE_KILL_2))
     
     #Do not grant score for torb if not primary, or for hammond if not roll/piledriver
     if eventAbility != Button.PRIMARY_FIRE and heroes[attacker.score] == Hero.TORBJORN:
@@ -239,7 +233,7 @@ rule "player suicided":
     @Event playerDied
     @Condition attacker == victim
     @Condition victim.score > 0
-    smallMessage(victim, STR_KILLED_YOURSELF)
+    bigMessage(victim, STR_KILLED_YOURSELF)
     victim.score--
 
 rule "player score changed":
@@ -434,7 +428,7 @@ rule "mirror walls and spawns":
 
 #!include "walls.opy"
 #!include "build_mode.opy"
-#!include "win_screen/winhud.opy"
+##!include "win_screen/winhud.opy"
 
 
 rule "player wins":
@@ -450,11 +444,11 @@ rule "player wins":
     bigMessage(getAllPlayers(), " \n\n\n\n\n".format(eventPlayer))
     wait(1)
 
-    if eventPlayer.couldNameBeGuessed:
-        displayWinHuds = true
-    else:
-        hudSubheader(getAllPlayers(), p" \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudPosition.LEFT, -999, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    #if eventPlayer.couldNameBeGuessed:
+    #    displayWinHuds = true
+    #else:
+    hudSubheader(getAllPlayers(), p" \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudPosition.LEFT, -999, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
-        hudSubheader(getAllPlayers(), " \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudPosition.TOP, -999, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
-        hudHeader(getAllPlayers(), " \n     {} {}     \n".format(eventPlayer, STR_PLAYER_WINS), HudPosition.TOP, -998, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
-        hudSubheader(getAllPlayers(), " \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudPosition.TOP, -997, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), " \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudPosition.TOP, -999, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudHeader(getAllPlayers(), " \n     {} {}     \n".format(eventPlayer, STR_PLAYER_WINS), HudPosition.TOP, -998, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), " \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", HudPosition.TOP, -997, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)

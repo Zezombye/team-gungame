@@ -28,6 +28,7 @@ rule "walls application - nepal shrine":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
     @Condition getCurrentMap() in [Map.NEPAL_SHRINE]
+    @Disabled
 
     while true:
         eventPlayer.doNotSavePosition = false

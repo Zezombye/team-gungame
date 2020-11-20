@@ -26,15 +26,15 @@ settings {
     "gamemodes": {
         "elimination": {
             "enabledMaps": [
-                /*"ayutthaya",
+                "ayutthaya",
                 "blackForest",
                 "blackForestWinter",
                 "ecopointAntarctica",
                 "ecopointAntarcticaWinter",
                 "lijiangGarden",
-                "lijiangGardenLny",*/
+                "lijiangGardenLny",
                 "lijiangControlCenter",
-                /*"lijiangControlCenterLny",
+                "lijiangControlCenterLny",
                 "lijiangNightMarket",
                 "lijiangNightMarketLny",
                 "necropolis",
@@ -42,7 +42,7 @@ settings {
                 "nepalShrine",
                 "nepalVillage",
                 "oasisUniversity",
-                "iliosRuins",*/
+                "iliosRuins",
             ]
         },
         "general": {
@@ -68,6 +68,6 @@ settings {
         }
     },
     "workshop": {
-        "Make spawns closer": true
+        "Make spawns closer": false
     }
 }

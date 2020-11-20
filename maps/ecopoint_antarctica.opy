@@ -22,6 +22,7 @@ rule "walls application - ecopoint":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
     @Condition getCurrentMap() in [Map.ECOPOINT_ANTARCTICA, Map.ECOPOINT_ANTARCTICA_WINTER]
+    @Disabled
 
     while true:
         eventPlayer.doNotSavePosition = false

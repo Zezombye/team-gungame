@@ -27,6 +27,7 @@ rule "walls application - nepal sanctum":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
     @Condition getCurrentMap() in [Map.NEPAL_SANCTUM]
+    @Disabled
 
     while true:
         eventPlayer.doNotSavePosition = false

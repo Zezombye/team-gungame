@@ -34,6 +34,7 @@ rule "walls application - ilios ruins":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
     @Condition getCurrentMap() in [Map.ILIOS_RUINS]
+    @Disabled
 
     while true:
         eventPlayer.doNotSavePosition = false

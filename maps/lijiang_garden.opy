@@ -22,6 +22,7 @@ rule "walls application - lijiang garden":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
     @Condition getCurrentMap() in [Map.LIJIANG_GARDEN, Map.LIJIANG_GARDEN_LNY]
+    @Disabled
 
     while true:
         eventPlayer.doNotSavePosition = false

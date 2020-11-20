@@ -35,6 +35,7 @@ rule "walls application - lijiang control center":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isAlive()
     @Condition getCurrentMap() in [Map.LIJIANG_CONTROL_CENTER, Map.LIJIANG_CONTROL_CENTER_LNY]
+    @Disabled
 
     while true:
         eventPlayer.doNotSavePosition = false

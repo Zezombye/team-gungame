@@ -1,5 +1,6 @@
 
 #!define GAMEMODE_VERSION "0.1"
+#!define GAMEMODE_CODE "EZ990"
 
 #!include "settings.opy"
 
@@ -14,27 +15,26 @@ globalvar heroes = [
 
     Hero.ROADHOG,
     Hero.ORISA,
-    Hero.SIGMA,
     Hero.ZARYA,
     Hero.REINHARDT,
     Hero.DVA,
-    Hero.WINSTON,
+    Hero.WINSTON, #counters: genji, sigma
+    Hero.SIGMA,
 
-    Hero.GENJI,
-    Hero.SOMBRA,
-    Hero.JUNKRAT,
-    Hero.MEI,
-    Hero.ECHO,
+    Hero.GENJI, #soft counters: bastion
+    Hero.BASTION, #counters: doomfist
+    Hero.MEI, #counters: doomfist
+    Hero.SOMBRA, #counters: doomfist
     Hero.TRACER,
     Hero.DOOMFIST,
-    Hero.ASHE,
-    Hero.SOLDIER,
-    Hero.MCCREE,
-    Hero.PHARAH,
+    Hero.ASHE, #counters: pharah, echo
+    Hero.SOLDIER, #counters: pharah, echo
+    Hero.MCCREE, #counters: pharah, echo
+    Hero.PHARAH, #counters: junkrat, doomfist
+    Hero.ECHO, #counters: junkrat, doomfist
+    Hero.JUNKRAT, #soft counters: bastion
     Hero.REAPER,
     Hero.HANZO,
-    Hero.BASTION,
-    Hero.WIDOWMAKER,
     Hero.SYMMETRA,
 
     Hero.BAPTISTE,
@@ -42,8 +42,9 @@ globalvar heroes = [
     Hero.MOIRA,
     Hero.ZENYATTA,
     Hero.MERCY,
-    Hero.LUCIO,
-    Hero.BRIGITTE,
+    Hero.LUCIO, #counters: widowmaker
+    Hero.WIDOWMAKER,
+    Hero.BRIGITTE, #counters: tracer
 
     Hero.HAMMOND,
     Hero.TORBJORN,
@@ -53,7 +54,7 @@ globalvar practiceRangeTranslations = [p"Practice Range", p"Champ de tir"]
 
 globalvar makeSpawnsCloser = createWorkshopSetting(bool, "", "Make spawns closer", false, 0)
 globalvar oneAmmoForWidow = createWorkshopSetting(bool, "", "Widowmaker only has one bullet", true, 1)
-globalvar respawnTime = createWorkshopSetting(float[1:3], "", "Respawn time", 3, 2)
+globalvar respawnTime = createWorkshopSetting(float[1:3], "", "Respawn time", 1.5, 2)
 globalvar invulnTime = createWorkshopSetting(float[2:4], "", "Invulnerability time", 3, 3)
 
 globalvar team1SpawnPos = []
@@ -116,7 +117,7 @@ rule "init":
         )
         wait()
     
-    hudSubheader(getAllPlayers(), "{}{}".format(STR_MADE_BY_ZEZ, GAMEMODE_VERSION), HudPosition.TOP, -899, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), "{}{}{}{}".format(STR_MADE_BY_ZEZ_1, GAMEMODE_VERSION, STR_MADE_BY_ZEZ_2, GAMEMODE_CODE), HudPosition.TOP, -899, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
     hudSubtext(getAllPlayers(), "discord.io/zezworkshop\n\n\n", HudPosition.TOP, -898, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
     hudSubtext(getPlayersOnHero(Hero.HAMMOND, Team.ALL), "{}{}{}{}{}".format(STR_HAMMOND_PROGRESS_1, abilityIconString(Hero.HAMMOND, Button.SECONDARY_FIRE), STR_HAMMOND_PROGRESS_2, abilityIconString(Hero.HAMMOND, Button.CROUCH), STR_HAMMOND_PROGRESS_3), HudPosition.TOP, -895, Color.RED, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 

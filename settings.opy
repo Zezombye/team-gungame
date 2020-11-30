@@ -15,10 +15,10 @@ Made by Zezombyeㆍㆍㆍㆍㆍㆍㆍㆍㆍㆍㆍㆍ  discord.io/ZezWorkshop
 
 settings {
     "main": {
-        "description": "ㅤㅤㅤㅤㅤㅤㅤㅤㅤT e a m   G u n g a m e  |  v"+GAMEMODE_VERSION+"    ______________________________________________________________ ━━━━━━━━》Get to the next hero by dealing a killing blоw. ━━━━━━━━》Be the first to kill with Torbjörn to win! ━━━━━━━━》Kill with Melee to steal a level. ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣ㅤㅤ Made by Zezombyeㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ  discord.io/ZezWorkshop"
+        "description": "ㅤㅤㅤㅤㅤㅤㅤ T e a m   G u n g a m e  |  v"+GAMEMODE_VERSION+"  |  "+GAMEMODE_CODE+" ______________________________________________________________ ━━━━━━━━》Get to the next hero by dealing a killing blоw. ━━━━━━━━》Be the first to kill with Torbjörn to win! ━━━━━━━━》Kill with Melee to steal a level. ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣ㅤㅤ Made by Zezombyeㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ  discord.io/ZezWorkshop"
     },
     "lobby": {
-        "allowPlayersInQueue": true,
+        "allowPlayersInQueue": false,
         "spectatorSlots": 6,
         "team1Slots": 6,
         "team2Slots": 6
@@ -65,9 +65,15 @@ settings {
             /*"hammond": {
                 "enableRollOnly": true
             },*/
-        }
+            "general": {
+                "health%": 100,
+                "ultGen%": 200,
+                "combatUltGen%": 200,
+                "passiveUltGen%": 500,
+            }
+        },
     },
     "workshop": {
-        "Make spawns closer": false
+        "Make spawns closer": true
     }
 }

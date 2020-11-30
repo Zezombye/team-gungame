@@ -1,7 +1,12 @@
 const translations = {
-    MADE_BY_ZEZ: {
+    //Made by Zezombye | v1.0 | code: ABCDE
+    MADE_BY_ZEZ_1: {
         "en-US": "Made by Zezombye | v",
         "fr-FR": "Créé par Zezombye | v"
+    },
+    MADE_BY_ZEZ_2: {
+        "en-US": " | code: ",
+        "fr-FR": " | code : "
     },
     //Do a kill with {0} Roll or {1} Piledriver to progress
     HAMMOND_PROGRESS_1: {
